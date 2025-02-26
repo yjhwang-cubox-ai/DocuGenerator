@@ -1,10 +1,9 @@
 import random
-import string
 import datetime
 from PIL import Image, ImageDraw, ImageFont
 import os
-import glob
 import pandas as pd
+from tqdm import tqdm
 
 class BusinessRegistrationGenerator:
     def __init__(self, 
@@ -35,7 +34,7 @@ class BusinessRegistrationGenerator:
         os.makedirs(self.output_dir, exist_ok=True)
         
         # 폰트 미리 로드
-        self.title_font = ImageFont.truetype(self.font_path, 40)
+        self.title_font = ImageFont.truetype(self.font_path, 50)
         self.normal_font = ImageFont.truetype(self.font_path, 28)
         self.small_font = ImageFont.truetype(self.font_path, 24)
 
@@ -47,20 +46,22 @@ class BusinessRegistrationGenerator:
             tax_offices = [line.strip() for line in f.readlines()]
         return information, tax_offices
     
-    def generate_business_number():
+    def generate_business_number(self):
         return f"{random.randint(100000, 999999)}-{random.randint(1000000, 9999999)}"
 
-    def generate_random_date(self, start_year=2024, end_year=2025):
+    def generate_random_date(self, start_year=2022, end_year=2025):
         start_date = datetime.date(start_year, 1, 1)
         end_date = datetime.date(end_year, 12, 31)
         delta = end_date - start_date
         random_days = random.randrange(delta.days)
         date = start_date + datetime.timedelta(days=random_days)
-        return date.strftime("%Y년 %m월 %d일")
+        return date.strftime("%Y 년 %m 월 %d 일")
 
-    def generate_random_text(self):
-        items = ["도소매", "서비스", "제조업", "정보통신업", "부동산업", "컨설팅"]
-        return random.choice(items)
+    def generate_business_type(self, num):
+        main_types = ["제조", "건설", "도소매", "운수", "숙박", "정보통신", "금융", "부동산", "과학기술 서비스", "교육 서비스", "전문, 과학 및 기술서비스업"]
+        sub_types = ["금속 가공제품 제조업", "전자부품 제조업", "소프트웨어 개발", "유통업", "도매 및 상품 중개업", "소매업", "일반 건설업", "전문직별 공사업", "전기 전자공학 연구개발업"]
+    
+        return random.sample(main_types, num), random.sample(sub_types, num)
 
     def create_single_image(self, index=0):
         """단일 사업자등록증 이미지를 생성하여 파일로 저장"""
@@ -75,50 +76,69 @@ class BusinessRegistrationGenerator:
         # 2) 데이터 생성
         data = self.information.sample(n=1)
         information = {
+            "HEAD": "사업자등록증",
             "등록번호": data['사업자등록번호'].values[0],
+            "사업자종류": None,
             "상호": data['상호'].values[0],
             "대표자명": data['대표자명'].values[0],
+            "개업연월일": data['신고일자'].values[0],
+            "법인등록번호": None,
             "사업장 소재지": data['사업장소재지(도로명)'].values[0],
-            "개업일자": data['신고일자'].values[0],
-            # "업태/종목": self.generate_random_text(),
-            # "발급일자": self.generate_random_date(),
-            # "세무서명": "북부세무서장"
+            "업태": None,
+            "종목": None,
+            "발급일자": None,
+            "세무서명": None
         }
 
-        # 1) 랜덤으로 상호명에 주식회사 붙이기
-        if random.random() < 0.3:
-            information['상호'] = f"주식회사 {information['상호']}"
+        # 1.사업자 종류
+        information["사업자종류"] = "( 법인사업자 )" if data['법인여부'].values[0] == "법인" else "( 일반과세자 )"
 
-        # 2. 개업일자 데이터 형태 수정
-        information['개업일자'] = f"{str(information['개업일자'])[:4]} 년 {str(information['개업일자'])[4:6]} 월 {str(information['개업일자'])[6:]} 일"
-        # 3. 업태
+        # 2.랜덤으로 상호명에 주식회사 붙이기
+        if random.random() < 0.5:
+            prefixes = ["주식회사", "유한회사", "(주)"]
+            if "주식회사" not in information['상호']:
+                information['상호'] = f"{random.choice(prefixes)} {information['상호']}"
+
+        # 3.개업일자 데이터 형태 수정
+        information['개업연월일'] = f"{str(information['개업연월일'])[:4]} 년 {str(information['개업연월일'])[4:6]} 월 {str(information['개업연월일'])[6:]} 일"
         
-        # 4. 종목
-        # 5. 세무서명 래덤 선택
+        # 4.법인등록번호 생성
+        information['법인등록번호'] = self.generate_business_number()
+        
+        # 5.업태, 종목
+        information["업태"], information["종목"] = self.generate_business_type(random.randint(1, 5))
+
+        # 6.발급일자 랜덤 선택
+        information['발급일자'] = self.generate_random_date()
+
+        # 7.세무서명 랜덤 선택
+        information['세무서명'] = f"{random.choice(self.tax_office)}장"
+
 
         # 3) 텍스트 배치
         # 실제 사업자등록증 레이아웃에 맞게 좌표 조절
-        draw.text((self.width/2 - 150, 50), "사업자등록증", font=self.title_font, fill=(0, 0, 0))
+        head_text = ' '.join(information['HEAD'])
+        draw.text((self.width/2 - 200, 50), head_text, font=self.title_font, fill=(0, 0, 0))
 
-        y_offset = 150
-        line_spacing = 60
+        # y_offset = 150
+        # line_spacing = 60
 
-        draw.text((100, y_offset), f"등록번호: {data['등록번호']}", font=self.normal_font, fill=(0, 0, 0))
-        y_offset += line_spacing
-        draw.text((100, y_offset), f"상호: {data['상호']}", font=self.normal_font, fill=(0, 0, 0))
-        y_offset += line_spacing
-        draw.text((100, y_offset), f"대표자명: {data['대표자명']}", font=self.normal_font, fill=(0, 0, 0))
-        y_offset += line_spacing
-        draw.text((100, y_offset), f"사업장 소재지: {data['사업장 소재지']}", font=self.normal_font, fill=(0, 0, 0))
-        y_offset += line_spacing
-        draw.text((100, y_offset), f"개업일자: {data['개업일자']}", font=self.normal_font, fill=(0, 0, 0))
-        y_offset += line_spacing
-        draw.text((100, y_offset), f"업태/종목: {data['업태/종목']}", font=self.normal_font, fill=(0, 0, 0))
-        y_offset += line_spacing
+        # draw.text((100, y_offset), f"등록번호: {data['등록번호']}", font=self.normal_font, fill=(0, 0, 0))
+        # y_offset += line_spacing
+        # draw.text((100, y_offset), f"상호: {data['상호']}", font=self.normal_font, fill=(0, 0, 0))
+        # y_offset += line_spacing
+        # draw.text((100, y_offset), f"대표자명: {data['대표자명']}", font=self.normal_font, fill=(0, 0, 0))
+        # y_offset += line_spacing
+        # draw.text((100, y_offset), f"사업장 소재지: {data['사업장 소재지']}", font=self.normal_font, fill=(0, 0, 0))
+        # y_offset += line_spacing
+        # draw.text((100, y_offset), f"개업일자: {data['개업일자']}", font=self.normal_font, fill=(0, 0, 0))
+        # y_offset += line_spacing
+        # draw.text((100, y_offset), f"업태/종목: {data['업태/종목']}", font=self.normal_font, fill=(0, 0, 0))
+        # y_offset += line_spacing
 
-        # 하단 발급 정보
-        draw.text((100, y_offset + 100), f"발급일자: {data['발급일자']}", font=self.small_font, fill=(0, 0, 0))
-        draw.text((100, y_offset + 140), f"{data['세무서명']}", font=self.small_font, fill=(0, 0, 0))
+        # # 하단 발급 정보
+        # draw.text((100, y_offset + 100), f"발급일자: {data['발급일자']}", font=self.small_font, fill=(0, 0, 0))
+        # draw.text((100, y_offset + 140), f"{data['세무서명']}", font=self.small_font, fill=(0, 0, 0))
 
         # 4) 저장
         filename = os.path.join(self.output_dir, f"business_reg_{index:05d}.png")
@@ -126,7 +146,7 @@ class BusinessRegistrationGenerator:
 
     def create_bulk_images(self, n=100000):
         """n장의 이미지를 순차적으로 생성"""
-        for i in range(n):
+        for i in tqdm(range(n)):
             self.create_single_image(index=i)
             if i % 1000 == 0 and i != 0:
                 print(f"{i}장 생성 완료")
@@ -142,4 +162,4 @@ if __name__ == "__main__":
         background_color=(255, 255, 255),
         output_dir="output_business_reg"
     )
-    generator.create_bulk_images(n=10000)  # 예: 1만 장 생성
+    generator.create_bulk_images(n=2)  # 예: 1만 장 생성
