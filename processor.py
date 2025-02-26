@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import pandas as pd
 from tqdm import tqdm
+import json
 
 class BusinessRegistrationGenerator:
     def __init__(self, 
@@ -29,14 +30,16 @@ class BusinessRegistrationGenerator:
         self.height = height
         self.background_color = background_color
         self.output_dir = output_dir
+        self.annotations_path = os.path.join(self.output_dir, "annotations.json")
+        self.annotations = {"images": [], "annotations": []}
         
         # 폴더가 없으면 생성
         os.makedirs(self.output_dir, exist_ok=True)
         
         # 폰트 미리 로드
-        self.title_font = ImageFont.truetype(self.font_path, 50)
-        self.normal_font = ImageFont.truetype(self.font_path, 28)
-        self.small_font = ImageFont.truetype(self.font_path, 24)
+        self.title_font = ImageFont.truetype(self.font_path, 70)
+        self.normal_font = ImageFont.truetype(self.font_path, 45)
+        self.small_font = ImageFont.truetype(self.font_path, 32)
 
         self.information, self.tax_office = self._read_information()
 
@@ -62,6 +65,37 @@ class BusinessRegistrationGenerator:
         sub_types = ["금속 가공제품 제조업", "전자부품 제조업", "소프트웨어 개발", "유통업", "도매 및 상품 중개업", "소매업", "일반 건설업", "전문직별 공사업", "전기 전자공학 연구개발업"]
     
         return random.sample(main_types, num), random.sample(sub_types, num)
+
+    def get_text_bbox(self, draw, text, x, y, font):
+        """텍스트의 bbox 좌표를 계산하여 반환"""
+        # 텍스트 크기 계산
+        bbox = font.getbbox(text)
+        width = bbox[2] - bbox[0]
+        height = bbox[3] - bbox[1]
+        
+        # 실제 화면상 좌표 계산 (left, top, right, bottom)
+        bbox_coords = (x, y, x + width, y + height)
+        return bbox_coords
+
+    def draw_text_with_bbox(self, draw, text, x, y, font, fill, image_id, idx):
+        """텍스트를 그리고 bbox 정보를 저장"""
+        # 텍스트 그리기
+        draw.text((x, y), text, font=font, fill=fill)
+        
+        # bbox 계산
+        bbox = self.get_text_bbox(draw, text, x, y, font)
+        
+        # annotations에 추가
+        annotation = {
+            "id": idx,
+            "image_id": image_id,
+            "bbox": [bbox[0], bbox[1], bbox[2] - bbox[0], bbox[3] - bbox[1]],  # [x, y, width, height] 형식
+            "text": text,
+            "area": (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
+        }
+        self.annotations["annotations"].append(annotation)
+        
+        return bbox
 
     def create_single_image(self, index=0):
         """단일 사업자등록증 이미지를 생성하여 파일로 저장"""
@@ -90,59 +124,139 @@ class BusinessRegistrationGenerator:
             "세무서명": None
         }
 
-        # 1.사업자 종류
+        # 2-1.사업자 종류
         information["사업자종류"] = "( 법인사업자 )" if data['법인여부'].values[0] == "법인" else "( 일반과세자 )"
 
-        # 2.랜덤으로 상호명에 주식회사 붙이기
+        # 2-2.랜덤으로 상호명에 주식회사 붙이기
         if random.random() < 0.5:
             prefixes = ["주식회사", "유한회사", "(주)"]
             if "주식회사" not in information['상호']:
                 information['상호'] = f"{random.choice(prefixes)} {information['상호']}"
 
-        # 3.개업일자 데이터 형태 수정
+        # 2-3.개업일자 데이터 형태 수정
         information['개업연월일'] = f"{str(information['개업연월일'])[:4]} 년 {str(information['개업연월일'])[4:6]} 월 {str(information['개업연월일'])[6:]} 일"
         
-        # 4.법인등록번호 생성
+        # 2-4.법인등록번호 생성
         information['법인등록번호'] = self.generate_business_number()
         
-        # 5.업태, 종목
+        # 2-5.업태, 종목
         information["업태"], information["종목"] = self.generate_business_type(random.randint(1, 5))
 
-        # 6.발급일자 랜덤 선택
+        # 2-6.발급일자 랜덤 선택
         information['발급일자'] = self.generate_random_date()
 
-        # 7.세무서명 랜덤 선택
+        # 2-7.세무서명 랜덤 선택
         information['세무서명'] = f"{random.choice(self.tax_office)}장"
 
-
-        # 3) 텍스트 배치
-        # 실제 사업자등록증 레이아웃에 맞게 좌표 조절
+        # 3) 텍스트 배치 및 bbox 정보 저장
+        filename = f"business_reg_{index:05d}.png"
+        image_info = {
+            "id": index,
+            "file_name": filename,
+            "width": self.width,
+            "height": self.height
+        }
+        self.annotations["images"].append(image_info)
+        
+        annotation_idx = len(self.annotations["annotations"])
+        
+        # 제목 텍스트 배치
         head_text = ' '.join(information['HEAD'])
-        draw.text((self.width/2 - 200, 50), head_text, font=self.title_font, fill=(0, 0, 0))
-
-        # y_offset = 150
-        # line_spacing = 60
-
-        # draw.text((100, y_offset), f"등록번호: {data['등록번호']}", font=self.normal_font, fill=(0, 0, 0))
-        # y_offset += line_spacing
-        # draw.text((100, y_offset), f"상호: {data['상호']}", font=self.normal_font, fill=(0, 0, 0))
-        # y_offset += line_spacing
-        # draw.text((100, y_offset), f"대표자명: {data['대표자명']}", font=self.normal_font, fill=(0, 0, 0))
-        # y_offset += line_spacing
-        # draw.text((100, y_offset), f"사업장 소재지: {data['사업장 소재지']}", font=self.normal_font, fill=(0, 0, 0))
-        # y_offset += line_spacing
-        # draw.text((100, y_offset), f"개업일자: {data['개업일자']}", font=self.normal_font, fill=(0, 0, 0))
-        # y_offset += line_spacing
-        # draw.text((100, y_offset), f"업태/종목: {data['업태/종목']}", font=self.normal_font, fill=(0, 0, 0))
-        # y_offset += line_spacing
-
-        # # 하단 발급 정보
-        # draw.text((100, y_offset + 100), f"발급일자: {data['발급일자']}", font=self.small_font, fill=(0, 0, 0))
-        # draw.text((100, y_offset + 140), f"{data['세무서명']}", font=self.small_font, fill=(0, 0, 0))
-
+        head_x, head_y = self.width//2 - 280, 280
+        self.draw_text_with_bbox(draw, head_text, head_x, head_y, self.title_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        # 사업자 종류 배치
+        kind_x, kind_y = self.width//2 - 150, 360
+        self.draw_text_with_bbox(draw, information['사업자종류'], kind_x, kind_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        # 등록번호 배치
+        reg_y = 430
+        reg_label_x = 500
+        reg_value_x = 730
+        self.draw_text_with_bbox(draw, "등록번호 : ", reg_label_x, reg_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['등록번호'], reg_value_x, reg_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        anchor_x = 150
+        # 상호 배치
+        company_y = reg_y + 80
+        company_label_x = anchor_x
+        company_value_x = 420
+        self.draw_text_with_bbox(draw, "법인명(단체명)  :", company_label_x, company_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['상호'], company_value_x, company_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        # 대표자명 배치
+        owner_y = company_y + 50
+        owner_label_x = anchor_x
+        owner_value_x = 420
+        self.draw_text_with_bbox(draw, "대      표      자 :", owner_label_x, owner_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['대표자명'], owner_value_x, owner_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        # 개업연월일 배치
+        open_y = owner_y + 80
+        open_label_x = anchor_x
+        open_value_x = 420
+        self.draw_text_with_bbox(draw, "개 업 연 월 일   :", open_label_x, open_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['개업연월일'], open_value_x, open_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        # # 법인등록번호 배치
+        # corp_y = open_y + 80
+        # self.draw_text_with_bbox(draw, "법인등록번호:", reg_label_x, corp_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        # annotation_idx += 1
+        # self.draw_text_with_bbox(draw, information['법인등록번호'], reg_value_x, corp_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        # annotation_idx += 1
+        
+        # 사업장 소재지 배치
+        addr_y = open_y + 50
+        addr_label_x = anchor_x
+        addr_value_x = 420
+        self.draw_text_with_bbox(draw, "사업장  소재지  :", addr_label_x, addr_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['사업장 소재지'], addr_value_x, addr_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        # 업태 배치
+        business_y = addr_y + 80
+        self.draw_text_with_bbox(draw, "업태:", reg_label_x, business_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        for i, btype in enumerate(information['업태']):
+            y_offset = business_y + i * 50
+            self.draw_text_with_bbox(draw, btype, reg_value_x, y_offset, self.normal_font, (0, 0, 0), index, annotation_idx)
+            annotation_idx += 1
+        
+        # 종목 배치
+        item_y = business_y + (len(information['업태']) * 50) + 50
+        self.draw_text_with_bbox(draw, "종목:", reg_label_x, item_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        for i, item in enumerate(information['종목']):
+            y_offset = item_y + i * 50
+            self.draw_text_with_bbox(draw, item, reg_value_x, y_offset, self.normal_font, (0, 0, 0), index, annotation_idx)
+            annotation_idx += 1
+        
+        # 발급일자 배치
+        issue_y = item_y + (len(information['종목']) * 50) + 150
+        self.draw_text_with_bbox(draw, "발급일자:", reg_label_x, issue_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['발급일자'], reg_value_x, issue_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        
+        # 세무서명 배치
+        tax_y = issue_y + 50
+        self.draw_text_with_bbox(draw, information['세무서명'], self.width//2, tax_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        
         # 4) 저장
-        filename = os.path.join(self.output_dir, f"business_reg_{index:05d}.png")
-        image.save(filename)
+        filepath = os.path.join(self.output_dir, filename)
+        image.save(filepath)
+        return filepath
 
     def create_bulk_images(self, n=100000):
         """n장의 이미지를 순차적으로 생성"""
@@ -150,6 +264,11 @@ class BusinessRegistrationGenerator:
             self.create_single_image(index=i)
             if i % 1000 == 0 and i != 0:
                 print(f"{i}장 생성 완료")
+        
+        # 모든 이미지 생성 후 annotations.json 저장
+        with open(self.annotations_path, 'w', encoding='utf-8') as f:
+            json.dump(self.annotations, f, ensure_ascii=False, indent=4)
+        print(f"annotations 저장 완료: {self.annotations_path}")
 
 if __name__ == "__main__":
     # 예시 사용
@@ -157,8 +276,8 @@ if __name__ == "__main__":
         template_path=None,      # 템플릿 이미지 경로가 있다면 여기 넣기
         dataset_path='dataset/total.csv',
         font_path="fonts/gulim.ttc",
-        width=1000,
-        height=1400,
+        width=1478,
+        height=2074,
         background_color=(255, 255, 255),
         output_dir="output_business_reg"
     )
