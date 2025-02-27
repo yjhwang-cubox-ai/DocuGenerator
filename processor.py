@@ -249,15 +249,26 @@ class BusinessRegistrationGenerator:
             annotation_idx += 1
         
         # # 종목 배치
-        self.draw_text_with_bbox(draw, "종목", business_value_x + 380, business_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        self.draw_text_with_bbox(draw, "종목", business_value_x + 440, business_y, self.small_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
         for i, item in enumerate(information['종목']):
             y_offset = business_y + i * 50
-            self.draw_text_with_bbox(draw, item, business_value_x + 470, y_offset, self.smallest_font, (0, 0, 0), index, annotation_idx)
+            self.draw_text_with_bbox(draw, item, business_value_x + 530, y_offset, self.smallest_font, (0, 0, 0), index, annotation_idx)
             annotation_idx += 1
 
         # 기타 텍스트 배치
-        text_y = 1300
+        text_y = 1100
+        text_label_x = anchor_x
+        text_value_x = 420
+        self.draw_text_with_bbox(draw, "발  급  사  유  :", text_label_x, text_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+
+        if random.random() < 0.5:
+            reasons = ['신규 개업 신고', '사업장 이전', '대표자 변경', '업종 변경', '휴업 및 재개업', '분실 또는 훼손', '기타 변경 등록']
+            self.draw_text_with_bbox(draw, random.choice(reasons), text_value_x, text_y, self.small_font, (0, 0, 0), index, annotation_idx)
+            annotation_idx += 1
+
+        text_y = 1400
         text_label_x = anchor_x
         text_value_x = 420
         self.draw_text_with_bbox(draw, "사업자 단위 과세 적용사업자 여부  :", text_label_x, text_y, self.small_font, (0, 0, 0), index, annotation_idx)
