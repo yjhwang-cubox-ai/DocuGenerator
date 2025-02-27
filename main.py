@@ -24,10 +24,10 @@ for file in tqdm(file_paths):
     
     # 사업자등록번호 형식이 맞는 데이터만 필터링
     mask = df_temp["사업자등록번호"].astype(str).str.match(pattern)
-    filtered_df = df_temp[mask]
+    filtered_df = df_temp[mask][columns_to_read]
     
     # 필요한 열만 선택하여 리스트에 추가
-    df_list.append(filtered_df[columns_to_read])
+    df_list.append(filtered_df.dropna())
 
 # 모든 데이터프레임을 하나로 합치기
 df = pd.concat(df_list, ignore_index=True)  # 데이터프레임 합치기
