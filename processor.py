@@ -40,6 +40,9 @@ class BusinessRegistrationGenerator:
         self.title_font = ImageFont.truetype(self.font_path, 70)
         self.normal_font = ImageFont.truetype(self.font_path, 45)
         self.small_font = ImageFont.truetype(self.font_path, 32)
+        self.smallest_font = ImageFont.truetype(self.font_path, 28)
+        self.reg_date_font = ImageFont.truetype(self.font_path, 40)
+        self.tax_office_font = ImageFont.truetype(self.font_path, 60)
 
         self.information, self.tax_office = self._read_information()
 
@@ -117,7 +120,7 @@ class BusinessRegistrationGenerator:
             "대표자명": data['대표자명'].values[0],
             "개업연월일": data['신고일자'].values[0],
             "법인등록번호": None,
-            "사업장 소재지": data['사업장소재지(도로명)'].values[0],
+            "사업장 소재지": data['사업장소재지(도로명)'].values[0][:30],
             "업태": None,
             "종목": None,
             "발급일자": None,
@@ -208,12 +211,11 @@ class BusinessRegistrationGenerator:
         self.draw_text_with_bbox(draw, information['개업연월일'], open_value_x, open_y, self.small_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
         
-        # # 법인등록번호 배치
-        # corp_y = open_y + 80
-        # self.draw_text_with_bbox(draw, "법인등록번호:", reg_label_x, corp_y, self.normal_font, (0, 0, 0), index, annotation_idx)
-        # annotation_idx += 1
-        # self.draw_text_with_bbox(draw, information['법인등록번호'], reg_value_x, corp_y, self.normal_font, (0, 0, 0), index, annotation_idx)
-        # annotation_idx += 1
+        # 법인등록번호 배치
+        self.draw_text_with_bbox(draw, "법인등록번호  :", open_value_x + 360, open_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['법인등록번호'], open_value_x + 600, open_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
         
         # 사업장 소재지 배치
         addr_y = open_y + 50
@@ -223,35 +225,58 @@ class BusinessRegistrationGenerator:
         annotation_idx += 1
         self.draw_text_with_bbox(draw, information['사업장 소재지'], addr_value_x, addr_y, self.small_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
+
+        # 본점 소재지 배치
+        ho_y = addr_y + 80
+        ho_label_x = anchor_x
+        ho_value_x = 420
+        self.draw_text_with_bbox(draw, "본 점 소 재 지  :", ho_label_x, ho_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        self.draw_text_with_bbox(draw, information['사업장 소재지'], ho_value_x, ho_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
         
         # 업태 배치
-        business_y = addr_y + 80
-        self.draw_text_with_bbox(draw, "업태:", reg_label_x, business_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        business_y = ho_y + 80
+        business_label_x = anchor_x
+        business_value_x = 420
+        self.draw_text_with_bbox(draw, "사 업 의  종 류  :", business_label_x, business_y, self.small_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
+        self.draw_text_with_bbox(draw, "업태", business_value_x, business_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1        
         for i, btype in enumerate(information['업태']):
             y_offset = business_y + i * 50
-            self.draw_text_with_bbox(draw, btype, reg_value_x, y_offset, self.normal_font, (0, 0, 0), index, annotation_idx)
+            self.draw_text_with_bbox(draw, btype, business_value_x + 80, y_offset, self.smallest_font, (0, 0, 0), index, annotation_idx)
             annotation_idx += 1
         
-        # 종목 배치
-        item_y = business_y + (len(information['업태']) * 50) + 50
-        self.draw_text_with_bbox(draw, "종목:", reg_label_x, item_y, self.normal_font, (0, 0, 0), index, annotation_idx)
+        # # 종목 배치
+        self.draw_text_with_bbox(draw, "종목", business_value_x + 380, business_y, self.small_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
         for i, item in enumerate(information['종목']):
-            y_offset = item_y + i * 50
-            self.draw_text_with_bbox(draw, item, reg_value_x, y_offset, self.normal_font, (0, 0, 0), index, annotation_idx)
+            y_offset = business_y + i * 50
+            self.draw_text_with_bbox(draw, item, business_value_x + 470, y_offset, self.smallest_font, (0, 0, 0), index, annotation_idx)
             annotation_idx += 1
+
+        # 기타 텍스트 배치
+        text_y = 1300
+        text_label_x = anchor_x
+        text_value_x = 420
+        self.draw_text_with_bbox(draw, "사업자 단위 과세 적용사업자 여부  :", text_label_x, text_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        taxation_text = "여(   ) 부(∨)" if random.random() < 0.8 else "여(∨) 부(   )"
+        self.draw_text_with_bbox(draw, taxation_text, text_label_x + 550, text_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
+        taxation_text = "여(   ) 부(∨)" if random.random() < 0.8 else "여(∨) 부(   )"
+        self.draw_text_with_bbox(draw, "전자세금계산서 전용 전자우편주소 :", text_label_x, text_y+50, self.small_font, (0, 0, 0), index, annotation_idx)
+        annotation_idx += 1
         
         # 발급일자 배치
-        issue_y = item_y + (len(information['종목']) * 50) + 150
-        self.draw_text_with_bbox(draw, "발급일자:", reg_label_x, issue_y, self.small_font, (0, 0, 0), index, annotation_idx)
-        annotation_idx += 1
-        self.draw_text_with_bbox(draw, information['발급일자'], reg_value_x, issue_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        date_x, date_y = self.width//2 - 190, 1680
+        self.draw_text_with_bbox(draw, information['발급일자'], date_x, date_y, self.reg_date_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
         
         # 세무서명 배치
-        tax_y = issue_y + 50
-        self.draw_text_with_bbox(draw, information['세무서명'], self.width//2, tax_y, self.small_font, (0, 0, 0), index, annotation_idx)
+        tax_x, tax_y = self.width//2 - 230, 1760
+        self.draw_text_with_bbox(draw, ' '.join(information['세무서명']), tax_x, tax_y, self.tax_office_font, (0, 0, 0), index, annotation_idx)
         
         # 4) 저장
         filepath = os.path.join(self.output_dir, filename)
@@ -281,4 +306,4 @@ if __name__ == "__main__":
         background_color=(255, 255, 255),
         output_dir="output_business_reg"
     )
-    generator.create_bulk_images(n=2)  # 예: 1만 장 생성
+    generator.create_bulk_images(n=10)  # 예: 1만 장 생성
