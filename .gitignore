@@ -1,1 +1,6 @@
 dataset/
+donut_dataset
+output_business_reg
+hub
+*.png
+*.json
