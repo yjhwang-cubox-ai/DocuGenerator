@@ -5,6 +5,8 @@ import os
 import pandas as pd
 from tqdm import tqdm
 import json
+from augmentation import DocumentAugmentor
+
 
 class BusinessRegistrationGenerator:
     def __init__(self, 
@@ -316,8 +318,9 @@ class BusinessRegistrationGenerator:
         tax_x, tax_y = self.width//2 - 230, 1760
         self.draw_text_with_bbox(draw, ' '.join(information['세무서명']), tax_x, tax_y, self.tax_office_font, (0, 0, 0), index, annotation_idx)
         
-        # 4) 저장
-        image.save(full_image_path)
+        # 4) augment 적용 + 저장
+        augmented_img = self.random_augmentations(image)
+        augmented_img.save(full_image_path)
         
         # 5) Donut 모델용 ground truth JSON 생성 (업태와 종목은 리스트를 문자열로 변환)
         업태_str = ", ".join(information['업태'])
@@ -442,6 +445,12 @@ class BusinessRegistrationGenerator:
             with open(split_path, 'w', encoding='utf-8') as f:
                 json.dump({"version": "v1.0", "data": split_data}, f, ensure_ascii=False, indent=4)
             print(f"{split_name} 데이터셋 저장 완료 ({len(split_data)} 건): {split_path}")
+    
+    def random_augmentations(self, img):
+        augmentor = DocumentAugmentor(max_num_augmentations=3)
+        augmented_img = augmentor.apply_random_augmentations(img)
+        return augmented_img
+
 
 if __name__ == "__main__":
     # 예시 사용
@@ -452,6 +461,6 @@ if __name__ == "__main__":
         width=1478,
         height=2074,
         background_color=(255, 255, 255),
-        output_dir="BRCDataset_V5"
+        output_dir="BRCDataset_V6"
     )
     generator.create_bulk_images(n=1000)  # 예: 10장 생성
