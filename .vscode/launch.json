@@ -8,7 +8,7 @@
             "name": "genearator",
             "type": "debugpy",
             "request": "launch",
-            "program": "processor_claude.py",
+            "program": "processor.py",
             "console": "integratedTerminal"
         }
     ]
