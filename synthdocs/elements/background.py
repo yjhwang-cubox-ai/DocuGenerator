@@ -2,7 +2,7 @@ from synthdocs import components, layers
 
 class Background:
     def __init__(self, config):
-        self.image = components.BaseTexture(config.get("image", {}))
+        self.image = components.BaseTexture(**config.get("image", {}))
         self.effect = components.Iterator(
             [
                 components.Switch(components.GaussianBlur()),
