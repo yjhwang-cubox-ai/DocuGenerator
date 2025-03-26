@@ -12,7 +12,7 @@ class DocumentAugmentor:
             self.random_rotation,
             self.random_blur,
             self.adjust_brightness_contrast,
-            self.random_shear
+            # self.random_shear
         ]
 
     def apply_perspective_transform(self, image):
@@ -63,16 +63,16 @@ class DocumentAugmentor:
         adjusted = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
         return adjusted
 
-    def random_shear(self, image, shear_range=(-0.2, 0.2)):
-        """시어 변환을 적용하여 이미지에 기울기를 추가"""
-        rows, cols, _ = image.shape
-        shear = np.random.uniform(shear_range[0], shear_range[1])
-        M = np.float32([[1, shear, 0],
-                        [0, 1, 0]])
-        nW = cols + abs(shear * rows)
-        sheared = cv2.warpAffine(image, M, (int(nW), rows), borderMode=cv2.BORDER_REPLICATE)
-        sheared = cv2.resize(sheared, (cols, rows))
-        return sheared
+    # def random_shear(self, image, shear_range=(-0.2, 0.2)):
+    #     """시어 변환을 적용하여 이미지에 기울기를 추가"""
+    #     rows, cols, _ = image.shape
+    #     shear = np.random.uniform(shear_range[0], shear_range[1])
+    #     M = np.float32([[1, shear, 0],
+    #                     [0, 1, 0]])
+    #     nW = cols + abs(shear * rows)
+    #     sheared = cv2.warpAffine(image, M, (int(nW), rows), borderMode=cv2.BORDER_REPLICATE)
+    #     sheared = cv2.resize(sheared, (cols, rows))
+    #     return sheared
 
     def apply_random_augmentations(self, image):
         """

@@ -21,6 +21,12 @@ document:
   short_size: [480, 1024]
   aspect_ratio: [1, 2]
 
+business_registration:
+  fullscreen: 0.5
+  landscape: 0.5
+  short_size: [480, 1024]
+  aspect_ratio: [1, 2]
+
   paper:
     image:
       paths: [resources/paper]
@@ -34,7 +40,7 @@ document:
     text:
       path: resources/corpus/kowiki.txt
     font:
-      paths: [resources/font/ko]
+      paths: [resources/font/ko/gulim.ttc]
       weights: [1]
       bold: 0
     layout:

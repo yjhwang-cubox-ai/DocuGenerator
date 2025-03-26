@@ -2,10 +2,13 @@ import random
 import datetime
 from PIL import Image, ImageDraw, ImageFont
 import os
+import cv2
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 import json
 from augmentation import DocumentAugmentor
+from augraphy import *
 
 
 class BusinessRegistrationGenerator:
@@ -58,6 +61,8 @@ class BusinessRegistrationGenerator:
         self.tax_office_font = ImageFont.truetype(self.font_path, 60)
 
         self.information, self.tax_office = self._read_information()
+        #artifact pipeline
+        self.augraphy_pipeline = default_augraphy_pipeline()
 
     def _read_information(self):
         information = pd.read_csv(self.dataset_path)
@@ -319,8 +324,11 @@ class BusinessRegistrationGenerator:
         self.draw_text_with_bbox(draw, ' '.join(information['세무서명']), tax_x, tax_y, self.tax_office_font, (0, 0, 0), index, annotation_idx)
         
         # 4) augment 적용 + 저장
-        augmented_img = self.random_augmentations(image)
-        augmented_img.save(full_image_path)
+        # augmented_img = self.random_augmentations(image)
+        opencv_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        augmented_img = self.augraphy_pipeline(opencv_image)
+        # augmented_img.save(full_image_path)
+        cv2.imwrite(full_image_path, augmented_img)
         
         # 5) Donut 모델용 ground truth JSON 생성 (업태와 종목은 리스트를 문자열로 변환)
         업태_str = ", ".join(information['업태'])
@@ -463,4 +471,4 @@ if __name__ == "__main__":
         background_color=(255, 255, 255),
         output_dir="BRCDataset_V6"
     )
-    generator.create_bulk_images(n=1000)  # 예: 10장 생성
+    generator.create_bulk_images(n=10)  # 예: 10장 생성

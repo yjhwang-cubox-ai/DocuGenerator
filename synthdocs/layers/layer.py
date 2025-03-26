@@ -315,6 +315,7 @@ class Group:
 
     @property
     def bbox(self):
+        # layer_bboxes = [layer.bbox for layer in self.layers if hasattr(layer, 'bbox')]
         return utils.merge_bbox([layer.bbox for layer in self.layers])
 
     @bbox.setter
