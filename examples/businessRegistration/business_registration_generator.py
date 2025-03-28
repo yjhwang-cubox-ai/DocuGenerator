@@ -46,7 +46,7 @@ class BusinessRegistration(templates.Template):
 
         self.custom_effect = components.Iterator(
             [
-                components.Switch(components.InkColorSwap()),
+                components.Switch(components.LinesDegradation()),
             ],
             **config.get("custom_effect", {}),
         )
