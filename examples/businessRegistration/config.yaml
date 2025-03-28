@@ -15,13 +15,13 @@ background:
         args:
           sigma: [0, 10]
 
-document:
-  fullscreen: 0.5
-  landscape: 0.5
-  short_size: [480, 1024]
-  aspect_ratio: [1, 2]
-
 business_registration:
+  template_image:
+    paths: resources/business_registration/background_image
+  business_info:
+    path: resources/business_registration/biz_info.csv
+
+document:
   fullscreen: 0.5
   landscape: 0.5
   short_size: [480, 1024]

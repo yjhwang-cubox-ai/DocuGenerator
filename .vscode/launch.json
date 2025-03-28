@@ -26,6 +26,22 @@
                 "examples/businessRegistration/config.yaml"
             ],
             "justMyCode": false
-        }
+        },
+        {
+            "name": "test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-o", "result",
+                "-c", "10",
+                "-w", "0",
+                "-v", "examples/businessRegistration/business_registration_generator.py",
+                "BusinessRegistration",                
+                "examples/businessRegistration/config.yaml"
+            ],
+            "justMyCode": false
+        },
     ]
 }

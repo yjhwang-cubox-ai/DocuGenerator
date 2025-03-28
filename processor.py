@@ -310,7 +310,6 @@ class BusinessRegistrationGenerator:
         taxation_text = "여(   ) 부(∨)" if random.random() < 0.8 else "여(∨) 부(   )"
         self.draw_text_with_bbox(draw, taxation_text, text_label_x + 550, text_y, self.small_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
-        taxation_text = "여(   ) 부(∨)" if random.random() < 0.8 else "여(∨) 부(   )"
         self.draw_text_with_bbox(draw, "전자세금계산서 전용 전자우편주소 :", text_label_x, text_y+50, self.small_font, (0, 0, 0), index, annotation_idx)
         annotation_idx += 1
         
