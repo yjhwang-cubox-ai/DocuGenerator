@@ -44,6 +44,13 @@ class BusinessRegistration(templates.Template):
             **config.get("effect", {}),
         )
 
+        self.custom_effect = components.Iterator(
+            [
+                components.Switch(components.InkColorSwap()),
+            ],
+            **config.get("custom_effect", {}),
+        )
+
         # 사업자 등록증 배경이미지
         self.registration_template_path = config.get("business_registration", {}).get("template_image", {}).get("paths", [])
         # 글꼴 설정
@@ -173,7 +180,7 @@ class BusinessRegistration(templates.Template):
         
         # 효과 적용
         # self.effect.apply([layer])
-        
+        self.custom_effect.apply([layer])
         # 최종 이미지 출력
         image = layer.output(bbox=[0, 0, *size])
         

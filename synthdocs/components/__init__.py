@@ -8,3 +8,4 @@ from synthdocs.components.text_effect import *
 from synthdocs.components.texture import *
 from synthdocs.components.transform import *
 from synthdocs.components.wrapper import *
+from synthdocs.components.artifact import *
