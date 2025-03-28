@@ -12,23 +12,7 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "synthdoc",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "main.py",
-            "console": "integratedTerminal",
-            "args": [
-                "-o", "result",
-                "-c", "10",
-                "-w", "0",
-                "-v", "examples/businessRegistration/template.py",
-                "BusinessRegistration",                
-                "examples/businessRegistration/config.yaml"
-            ],
-            "justMyCode": false
-        },
-        {
-            "name": "test",
+            "name": "business_registration",
             "type": "debugpy",
             "request": "launch",
             "program": "main.py",

@@ -105,9 +105,9 @@ class BusinessRegistration(templates.Template):
         template_layer = self.create_registration_template(size)
 
         # Blend images
-        # opacity = 0.9
-        # blended_img = multiply(template_layer.image, bg_layer.image, opacity)
-        # template_layer.image = blended_img
+        opacity = 0.9
+        blended_img = multiply(template_layer.image, bg_layer.image, opacity)
+        template_layer.image = blended_img
         
         # 무작위 사업자 정보 생성 또는 전달받은 정보 사용
         if business_info is None:
