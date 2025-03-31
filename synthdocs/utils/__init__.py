@@ -29,3 +29,4 @@ from synthdocs.utils.unicode_util import (
     vert_right_flip,
     vert_rot_flip,
 )
+from synthdocs.utils.overlay_builder import OverlayBuilder
