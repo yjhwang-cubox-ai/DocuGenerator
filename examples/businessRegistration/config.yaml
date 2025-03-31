@@ -152,11 +152,20 @@ custom_effect:
     # dithering
     # - prob: 1
     # inkbleed
+    # - prob: 1
+    #   args:
+    #     intensity_range: [0.1, 0.2]
+    #     kernel_size:
+    #       - [7, 7]
+    #       - [5, 5]
+    #       - [3, 3]
+    #     severity: [0.4, 0.6]
+    # ink shifter
     - prob: 1
       args:
-        intensity_range: [0.1, 0.2]
-        kernel_size:
-          - [7, 7]
-          - [5, 5]
-          - [3, 3]
-        severity: [0.4, 0.6]
+        text_shift_scale_range: [18, 27]
+        text_shift_factor_range: [1, 4]
+        text_fade_range: [0, 2]
+        blur_kernel_size: [5, 5]
+        blur_sigma: 0
+        noise_type: "random"
