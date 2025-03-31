@@ -5,5 +5,6 @@ from synthdocs.components.artifact.inkbleed import InkBleed
 from synthdocs.components.artifact.inkshifter import InkShifter
 from synthdocs.components.artifact.bleedthrough import BleedThrough
 from synthdocs.components.artifact.hollow import Hollow
+from synthdocs.components.artifact.letterpress import Letterpress
 
-__all__ = ["InkColorSwap", "LinesDegradation", "Dithering", "InkBleed", "InkShifter", "BleedThrough", "Hollow"]
+__all__ = ["InkColorSwap", "LinesDegradation", "Dithering", "InkBleed", "InkShifter", "BleedThrough", "Hollow", "Letterpress"]
