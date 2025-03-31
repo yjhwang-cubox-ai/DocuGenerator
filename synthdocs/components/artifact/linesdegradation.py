@@ -3,7 +3,7 @@ import random
 import cv2
 import numpy as np
 
-from synthtiger.components.component import Component
+from synthdocs.components.component import Component
 
 
 class LinesDegradation(Component):

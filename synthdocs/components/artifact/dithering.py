@@ -6,7 +6,7 @@ import numpy as np
 from numba import config
 from numba import jit
 
-from synthtiger.components.component import Component
+from synthdocs.components.component import Component
 
 
 class Dithering(Component):
