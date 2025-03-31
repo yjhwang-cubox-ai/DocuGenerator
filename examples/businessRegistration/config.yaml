@@ -138,14 +138,16 @@ custom_effect:
     #     ink_swap_min_area_range: [10, 20]
     #     ink_swap_max_area_range: [400, 500]
     # lines degradation
+    # - prob: 1
+    #   args:
+    #     line_roi: [0.0, 0.0, 1.0, 1.0]
+    #     line_gradient_range: [32, 255]
+    #     line_gradient_direction: [0, 2]
+    #     line_split_probability: [0.2, 0.4]
+    #     line_replacement_value: [250, 255]
+    #     line_min_length: [30, 40]
+    #     line_long_to_short_ratio: [5, 7]
+    #     line_replacement_probability: [0.4, 0.5]
+    #     line_replacement_thickness: [1, 3]
+    # dithering
     - prob: 1
-      args:
-        line_roi: [0.0, 0.0, 1.0, 1.0]
-        line_gradient_range: [32, 255]
-        line_gradient_direction: [0, 2]
-        line_split_probability: [0.2, 0.4]
-        line_replacement_value: [250, 255]
-        line_min_length: [30, 40]
-        line_long_to_short_ratio: [5, 7]
-        line_replacement_probability: [0.4, 0.5]
-        line_replacement_thickness: [1, 3]

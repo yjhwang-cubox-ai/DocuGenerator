@@ -20,7 +20,7 @@
             "args": [
                 "-o", "result",
                 "-c", "10",
-                "-w", "0",
+                "-w", "8",
                 "-v", "examples/businessRegistration/business_registration_generator.py",
                 "BusinessRegistration",                
                 "examples/businessRegistration/config.yaml"
