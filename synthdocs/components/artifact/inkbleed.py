@@ -98,7 +98,7 @@ class InkBleed(Component):
 
             # Apply sobel filter and dilate image
             sobelized = self.sobel(image)
-            kernel = np.ones(kernel_size, dtype="uint8")
+            kernel = np.ones(random.choice(kernel_size), dtype="uint8")
             sobelized_dilated = cv2.dilate(sobelized, kernel, iterations=1)
 
             # Create grayscale from the dilated edge image

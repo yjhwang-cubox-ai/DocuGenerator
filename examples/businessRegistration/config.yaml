@@ -150,4 +150,13 @@ custom_effect:
     #     line_replacement_probability: [0.4, 0.5]
     #     line_replacement_thickness: [1, 3]
     # dithering
+    # - prob: 1
+    # inkbleed
     - prob: 1
+      args:
+        intensity_range: [0.1, 0.2]
+        kernel_size:
+          - [7, 7]
+          - [5, 5]
+          - [3, 3]
+        severity: [0.4, 0.6]
