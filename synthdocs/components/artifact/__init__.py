@@ -8,5 +8,18 @@ from synthdocs.components.artifact.hollow import Hollow
 from synthdocs.components.artifact.letterpress import Letterpress
 from synthdocs.components.artifact.lowinkrandomlines import LowInkRandomLines
 from synthdocs.components.artifact.lowinkperiodiclines import LowInkPeriodicLines
+from synthdocs.components.artifact.colorpaper import ColorPaper
 
-__all__ = ["InkColorSwap", "LinesDegradation", "Dithering", "InkBleed", "InkShifter", "BleedThrough", "Hollow", "Letterpress", "LowInkRandomLines", "LowInkPeriodicLines"]
+__all__ = [
+    "InkColorSwap",
+    "LinesDegradation",
+    "Dithering",
+    "InkBleed",
+    "InkShifter",
+    "BleedThrough",
+    "Hollow",
+    "Letterpress",
+    "LowInkRandomLines",
+    "LowInkPeriodicLines",
+    "ColorPaper",
+]
