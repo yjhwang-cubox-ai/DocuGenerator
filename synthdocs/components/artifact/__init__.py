@@ -12,7 +12,7 @@ from synthdocs.components.artifact.colorpaper import ColorPaper
 from synthdocs.components.artifact.delaunay import DelaunayTessellation
 from synthdocs.components.artifact.quasicrystal import PatternGenerator
 from synthdocs.components.artifact.voronoi import VoronoiTessellation
-
+from synthdocs.components.artifact.watermark import WaterMark
 __all__ = [
     "InkColorSwap",
     "LinesDegradation",
@@ -28,4 +28,5 @@ __all__ = [
     "DelaunayTessellation",
     "PatternGenerator",
     "VoronoiTessellation",
+    "WaterMark",
 ]
