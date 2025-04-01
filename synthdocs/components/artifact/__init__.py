@@ -18,6 +18,7 @@ from synthdocs.components.artifact.brightnesstexturize import BrightnessTexturiz
 from synthdocs.components.artifact.colorshift import ColorShift
 from synthdocs.components.artifact.glitcheffect import GlitchEffect
 from synthdocs.components.artifact.dirtydrum import DirtyDrum
+from synthdocs.components.artifact.dirtyrollers import DirtyRollers
 
 
 
@@ -42,4 +43,5 @@ __all__ = [
     "ColorShift",
     "GlitchEffect",    
     "DirtyDrum",
+    "DirtyRollers",
 ]
