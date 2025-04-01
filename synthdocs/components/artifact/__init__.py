@@ -9,6 +9,7 @@ from synthdocs.components.artifact.letterpress import Letterpress
 from synthdocs.components.artifact.lowinkrandomlines import LowInkRandomLines
 from synthdocs.components.artifact.lowinkperiodiclines import LowInkPeriodicLines
 from synthdocs.components.artifact.colorpaper import ColorPaper
+from synthdocs.components.artifact.delaunay import DelaunayTessellation
 
 __all__ = [
     "InkColorSwap",
@@ -22,4 +23,5 @@ __all__ = [
     "LowInkRandomLines",
     "LowInkPeriodicLines",
     "ColorPaper",
+    "DelaunayTessellation",
 ]
