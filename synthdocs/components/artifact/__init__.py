@@ -10,6 +10,7 @@ from synthdocs.components.artifact.lowinkrandomlines import LowInkRandomLines
 from synthdocs.components.artifact.lowinkperiodiclines import LowInkPeriodicLines
 from synthdocs.components.artifact.colorpaper import ColorPaper
 from synthdocs.components.artifact.delaunay import DelaunayTessellation
+from synthdocs.components.artifact.quasicrystal import PatternGenerator
 
 __all__ = [
     "InkColorSwap",
@@ -24,4 +25,5 @@ __all__ = [
     "LowInkPeriodicLines",
     "ColorPaper",
     "DelaunayTessellation",
+    "PatternGenerator",
 ]
