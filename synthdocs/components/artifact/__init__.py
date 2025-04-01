@@ -15,6 +15,9 @@ from synthdocs.components.artifact.voronoi import VoronoiTessellation
 from synthdocs.components.artifact.watermark import WaterMark
 from synthdocs.components.artifact.noisetexturize import NoiseTexturize
 from synthdocs.components.artifact.brightnesstexturize import BrightnessTexturize
+from synthdocs.components.artifact.colorshift import ColorShift
+from synthdocs.components.artifact.glitcheffect import GlitchEffect
+
 
 
 __all__ = [
@@ -35,4 +38,6 @@ __all__ = [
     "WaterMark",
     "NoiseTexturize",
     "BrightnessTexturize",
+    "ColorShift",
+    "GlitchEffect",    
 ]
