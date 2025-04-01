@@ -11,6 +11,7 @@ from synthdocs.components.artifact.lowinkperiodiclines import LowInkPeriodicLine
 from synthdocs.components.artifact.colorpaper import ColorPaper
 from synthdocs.components.artifact.delaunay import DelaunayTessellation
 from synthdocs.components.artifact.quasicrystal import PatternGenerator
+from synthdocs.components.artifact.voronoi import VoronoiTessellation
 
 __all__ = [
     "InkColorSwap",
@@ -26,4 +27,5 @@ __all__ = [
     "ColorPaper",
     "DelaunayTessellation",
     "PatternGenerator",
+    "VoronoiTessellation",
 ]
