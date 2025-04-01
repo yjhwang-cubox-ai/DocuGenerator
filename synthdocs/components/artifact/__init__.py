@@ -14,6 +14,7 @@ from synthdocs.components.artifact.quasicrystal import PatternGenerator
 from synthdocs.components.artifact.voronoi import VoronoiTessellation
 from synthdocs.components.artifact.watermark import WaterMark
 from synthdocs.components.artifact.noisetexturize import NoiseTexturize
+from synthdocs.components.artifact.brightnesstexturize import BrightnessTexturize
 
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "VoronoiTessellation",
     "WaterMark",
     "NoiseTexturize",
+    "BrightnessTexturize",
 ]
