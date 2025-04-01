@@ -13,6 +13,9 @@ from synthdocs.components.artifact.delaunay import DelaunayTessellation
 from synthdocs.components.artifact.quasicrystal import PatternGenerator
 from synthdocs.components.artifact.voronoi import VoronoiTessellation
 from synthdocs.components.artifact.watermark import WaterMark
+from synthdocs.components.artifact.noisetexturize import NoiseTexturize
+
+
 __all__ = [
     "InkColorSwap",
     "LinesDegradation",
@@ -29,4 +32,5 @@ __all__ = [
     "PatternGenerator",
     "VoronoiTessellation",
     "WaterMark",
+    "NoiseTexturize",
 ]
