@@ -33,6 +33,9 @@ from synthdocs.components.artifact.noisylines import NoisyLines
 from synthdocs.components.artifact.bindingsandfasteners import BindingsAndFasteners
 from synthdocs.components.artifact.squish import Squish
 from synthdocs.components.artifact.geometric import Geometric
+from synthdocs.components.artifact.dotmatrix import DotMatrix
+from synthdocs.components.artifact.faxify import Faxify
+
 
 
 
@@ -73,4 +76,6 @@ __all__ = [
     "BindingsAndFasteners",
     "Squish",
     "Geometric",
+    "DotMatrix",
+    "Faxify",
 ]
