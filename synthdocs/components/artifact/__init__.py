@@ -31,6 +31,8 @@ from synthdocs.components.artifact.shadowcast import ShadowCast
 from synthdocs.components.artifact.lowlightnoise import LowLightNoise
 from synthdocs.components.artifact.noisylines import NoisyLines
 from synthdocs.components.artifact.bindingsandfasteners import BindingsAndFasteners
+from synthdocs.components.artifact.squish import Squish
+from synthdocs.components.artifact.geometric import Geometric
 
 
 
@@ -69,4 +71,6 @@ __all__ = [
     "LowLightNoise",
     "NoisyLines",
     "BindingsAndFasteners",
+    "Squish",
+    "Geometric",
 ]
