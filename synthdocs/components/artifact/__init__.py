@@ -24,6 +24,9 @@ from synthdocs.components.artifact.hsv_scaled_brightness import HSVScaledBrightn
 from synthdocs.components.artifact.gamma import Gamma
 from synthdocs.components.artifact.subtlenoise import SubtleNoise
 from synthdocs.components.artifact.jpeg import Jpeg
+from synthdocs.components.artifact.markup import Markup
+
+
 
 
 __all__ = [
@@ -53,4 +56,5 @@ __all__ = [
     "Gamma",
     "SubtleNoise",
     "Jpeg",
+    "Markup",
 ]
