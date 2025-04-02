@@ -19,7 +19,7 @@ from synthdocs.components.artifact.colorshift import ColorShift
 from synthdocs.components.artifact.glitcheffect import GlitchEffect
 from synthdocs.components.artifact.dirtydrum import DirtyDrum
 from synthdocs.components.artifact.dirtyrollers import DirtyRollers
-
+from synthdocs.components.artifact.lightinggradient import LightingGradient
 
 
 __all__ = [
@@ -44,4 +44,5 @@ __all__ = [
     "GlitchEffect",    
     "DirtyDrum",
     "DirtyRollers",
+    "LightingGradient",
 ]
