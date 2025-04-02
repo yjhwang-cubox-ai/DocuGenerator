@@ -9,7 +9,7 @@ import numpy as np
 from synthtiger.components.component import Component
 
 
-class Brightness(Component):
+class RGBShiftBrightness(Component):
     def __init__(self, beta=(-32, 32)):
         super().__init__()
         self.beta = beta

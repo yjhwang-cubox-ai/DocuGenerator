@@ -20,6 +20,7 @@ from synthdocs.components.artifact.glitcheffect import GlitchEffect
 from synthdocs.components.artifact.dirtydrum import DirtyDrum
 from synthdocs.components.artifact.dirtyrollers import DirtyRollers
 from synthdocs.components.artifact.lightinggradient import LightingGradient
+from synthdocs.components.artifact.hsv_scaled_brightness import HSVScaledBrightness
 
 
 __all__ = [
@@ -45,4 +46,5 @@ __all__ = [
     "DirtyDrum",
     "DirtyRollers",
     "LightingGradient",
+    "HSVScaledBrightness",
 ]
