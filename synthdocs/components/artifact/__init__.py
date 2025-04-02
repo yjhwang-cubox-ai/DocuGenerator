@@ -21,6 +21,10 @@ from synthdocs.components.artifact.dirtydrum import DirtyDrum
 from synthdocs.components.artifact.dirtyrollers import DirtyRollers
 from synthdocs.components.artifact.lightinggradient import LightingGradient
 from synthdocs.components.artifact.hsv_scaled_brightness import HSVScaledBrightness
+from synthdocs.components.artifact.gamma import Gamma
+from synthdocs.components.artifact.subtlenoise import SubtleNoise
+
+
 
 
 __all__ = [
@@ -47,4 +51,6 @@ __all__ = [
     "DirtyRollers",
     "LightingGradient",
     "HSVScaledBrightness",
+    "Gamma",
+    "SubtleNoise",
 ]
