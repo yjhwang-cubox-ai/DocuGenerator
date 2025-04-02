@@ -23,8 +23,7 @@ from synthdocs.components.artifact.lightinggradient import LightingGradient
 from synthdocs.components.artifact.hsv_scaled_brightness import HSVScaledBrightness
 from synthdocs.components.artifact.gamma import Gamma
 from synthdocs.components.artifact.subtlenoise import SubtleNoise
-
-
+from synthdocs.components.artifact.jpeg import Jpeg
 
 
 __all__ = [
@@ -53,4 +52,5 @@ __all__ = [
     "HSVScaledBrightness",
     "Gamma",
     "SubtleNoise",
+    "Jpeg",
 ]
