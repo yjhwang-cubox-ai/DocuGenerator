@@ -29,6 +29,7 @@ from synthdocs.components.artifact.scribbles import Scribbles
 from synthdocs.components.artifact.badphotocopy import BadPhotoCopy
 from synthdocs.components.artifact.shadowcast import ShadowCast
 from synthdocs.components.artifact.lowlightnoise import LowLightNoise
+from synthdocs.components.artifact.noisylines import NoisyLines
 
 
 
@@ -65,4 +66,5 @@ __all__ = [
     "BadPhotoCopy",
     "ShadowCast",
     "LowLightNoise",
+    "NoisyLines",
 ]
