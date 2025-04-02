@@ -8,7 +8,7 @@ import numpy as np
 import requests
 
 from synthdocs.components.component import Component
-from augraphy.utilities.inkgenerator import InkGenerator
+from synthdocs.utils.inkgenerator import InkGenerator
 
 
 class Scribbles(Component):

@@ -26,6 +26,9 @@ from synthdocs.components.artifact.subtlenoise import SubtleNoise
 from synthdocs.components.artifact.jpeg import Jpeg
 from synthdocs.components.artifact.markup import Markup
 from synthdocs.components.artifact.scribbles import Scribbles
+from synthdocs.components.artifact.badphotocopy import BadPhotoCopy
+from synthdocs.components.artifact.shadowcast import ShadowCast
+from synthdocs.components.artifact.lowlightnoise import LowLightNoise
 
 
 
@@ -59,4 +62,7 @@ __all__ = [
     "Jpeg",
     "Markup",
     "Scribbles",
+    "BadPhotoCopy",
+    "ShadowCast",
+    "LowLightNoise",
 ]

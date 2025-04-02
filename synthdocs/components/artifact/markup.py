@@ -6,7 +6,6 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from augraphy.augmentations.brightness import Brightness
 from synthdocs.utils.lib import add_noise as lib_add_noise
 from synthdocs.utils.lib import generate_average_intensity
 from synthdocs.utils.lib import smooth
