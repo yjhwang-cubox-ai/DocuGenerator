@@ -9,10 +9,10 @@ from skimage.morphology import thin
 from sklearn.datasets import make_blobs
 
 from augraphy.augmentations.brightness import Brightness
-from augraphy.augmentations.lib import add_noise
-from augraphy.augmentations.lib import binary_threshold
-from augraphy.augmentations.lib import rotate_image
-from augraphy.augmentations.lib import sobel
+from synthdocs.utils.lib import add_noise
+from synthdocs.utils.lib import binary_threshold
+from synthdocs.utils.lib import rotate_image
+from synthdocs.utils.lib import sobel
 
 
 class InkGenerator:

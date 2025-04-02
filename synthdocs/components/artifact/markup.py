@@ -30,7 +30,7 @@ class Markup(Component):
     :type markup_ink: string, optional
     :param markup_color: BGR color tuple.
     :type markup_color: tuple or string
-    :param repetitions: Determine how many time a single markup effect should be drawn.
+    :param repetitions: Determine how many time a single markup effect should be drawn.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
     :type repetitions: int
     :param large_word_mode: Set true to draw markup on large words, else large word will be ignored.
     :type large_word_mode: boolean
