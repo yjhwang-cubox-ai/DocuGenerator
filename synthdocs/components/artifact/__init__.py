@@ -30,6 +30,7 @@ from synthdocs.components.artifact.badphotocopy import BadPhotoCopy
 from synthdocs.components.artifact.shadowcast import ShadowCast
 from synthdocs.components.artifact.lowlightnoise import LowLightNoise
 from synthdocs.components.artifact.noisylines import NoisyLines
+from synthdocs.components.artifact.bindingsandfasteners import BindingsAndFasteners
 
 
 
@@ -67,4 +68,5 @@ __all__ = [
     "ShadowCast",
     "LowLightNoise",
     "NoisyLines",
+    "BindingsAndFasteners",
 ]
