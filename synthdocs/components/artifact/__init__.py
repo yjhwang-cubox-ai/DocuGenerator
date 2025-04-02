@@ -25,6 +25,7 @@ from synthdocs.components.artifact.gamma import Gamma
 from synthdocs.components.artifact.subtlenoise import SubtleNoise
 from synthdocs.components.artifact.jpeg import Jpeg
 from synthdocs.components.artifact.markup import Markup
+from synthdocs.components.artifact.scribbles import Scribbles
 
 
 
@@ -57,4 +58,5 @@ __all__ = [
     "SubtleNoise",
     "Jpeg",
     "Markup",
+    "Scribbles",
 ]
