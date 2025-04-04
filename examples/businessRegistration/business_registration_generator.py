@@ -37,7 +37,7 @@ class BusinessRegistration(templates.Template):
                 components.Switch(components.RGB()),
                 components.Switch(components.Shadow()),
                 components.Switch(components.Contrast()),
-                components.Switch(components.Brightness()),
+                components.Switch(components.RGBShiftBrightness()),
                 components.Switch(components.MotionBlur()),
                 components.Switch(components.GaussianBlur()),
             ],
@@ -46,9 +46,23 @@ class BusinessRegistration(templates.Template):
 
         self.custom_effect = components.Iterator(
             [
-                components.Switch(components.LinesDegradation()),
+                components.Switch(components.LowInkRandomLines()),
             ],
             **config.get("custom_effect", {}),
+        )
+
+        self.paper_effect = components.Iterator(
+            [
+                components.Switch(components.BrightnessTexturize()),
+            ],
+            **config.get("paper_effect", {}),
+        )
+
+        self.post_effect = components.Iterator(
+            [
+                components.Switch(components.ReflectedLight()),
+            ],
+            **config.get("post_effect", {}),
         )
 
         # 사업자 등록증 배경이미지
@@ -111,10 +125,17 @@ class BusinessRegistration(templates.Template):
         # 사업자 등록증 양식 이미지 생성
         template_layer = self.create_registration_template(size)
 
-        # Blend images
-        opacity = 0.9
-        blended_img = multiply(template_layer.image, bg_layer.image, opacity)
+        # Blend images - texture
+        # opacity = 0.9
+        # blended_img = multiply(template_layer.image, bg_layer.image, opacity)
+        # template_layer.image = blended_img
+        # Blend images - 종이 질감 + 사업자등록증 배경
+        opacity = 0.3
+        blended_img = normal(template_layer.image, bg_layer.image, opacity)
         template_layer.image = blended_img
+
+        # Paper Effect 적용
+        # self.paper_effect.apply([template_layer])
         
         # 무작위 사업자 정보 생성 또는 전달받은 정보 사용
         if business_info is None:
@@ -125,7 +146,7 @@ class BusinessRegistration(templates.Template):
         texts = []
         combined_info = {}  # key와 value를 모두 저장할 딕셔너리
 
-        # 1. 키 레이어 생성 (필드명)
+        # 1. 키 레이어 생성
         for field, config in self.keys.items():
             key_layer = self.create_text_layer(
                 f"key_{field}",
@@ -135,12 +156,12 @@ class BusinessRegistration(templates.Template):
                 config["bold"]
             )
             text_layers.append(key_layer)
-            texts.append(field)
+            texts.append({"text": re.sub(r'\s{2,}', ' ', config["text"]), "position": config["position"]})
             
             # combined_info에 키 추가
             combined_info[f"key_{field}"] = field
 
-
+        # 2. 값 레이어 생성
         for field, value in business_info.items():            
             if field in self.fields:
                 if isinstance(value, list):
@@ -156,36 +177,79 @@ class BusinessRegistration(templates.Template):
                             self.fields[field]["font_size"], 
                             self.fields[field]["bold"])
                         text_layers.append(text_layer)
-                        texts.append(item)
+                        # texts.append(item)
+                        texts.append({"text": re.sub(r'\s{2,}', ' ', item), "position": position})
 
                         # combined_info에 값 추가
                         combined_info[f"value_{field}_{i}"] = item
                 else:
-                    text_layer = self.create_text_layer(
-                        field, 
-                        str(value), 
-                        self.fields[field]["position"],
-                        self.fields[field]["font_size"],
-                        self.fields[field]["bold"]
-                    )
-                    text_layers.append(text_layer)
-                    texts.append(value)
+                    # 주소 필드인 경우 줄바꿈 처리
+                    if field in ["사업장주소", "본점주소"]:
+                        font_size = self.fields[field]["font_size"]
+                        font_path = self.bold_font_path if self.fields[field]["bold"] else self.font_path
+                        font = ImageFont.truetype(font_path, font_size)
+                        
+                        # 주소 텍스트를 여러 줄로 분할 (종이 가로 크기의 약 60%를 최대 너비로 설정)
+                        max_width = int(self.width * 0.6)
+                        text_lines = self.split_text_to_fit_width(str(value), font, max_width)
+                        
+                        # 각 줄을 별도의 텍스트 레이어로 생성
+                        base_position = self.fields[field]["position"]
+                        y_offset_step = 40  # 줄 간격
+                        
+                        for i, line in enumerate(text_lines):
+                            position = (base_position[0], base_position[1] + i * y_offset_step)
+                            text_layer = self.create_text_layer(
+                                f"{field}_line{i}", 
+                                line, 
+                                position,
+                                font_size,
+                                self.fields[field]["bold"]
+                            )
+                            text_layers.append(text_layer)
+                            # texts.append(line)
+                            texts.append({"text": re.sub(r'\s{2,}', ' ', line), "position": position})
+                            
+                            # combined_info에 값 추가
+                            combined_info[f"value_{field}_line{i}"] = line
+                    else:
+                        # 일반 필드는 그대로 처리
+                        text_layer = self.create_text_layer(
+                            field, 
+                            str(value), 
+                            self.fields[field]["position"],
+                            self.fields[field]["font_size"],
+                            self.fields[field]["bold"]
+                        )
+                        text_layers.append(text_layer)
+                        # texts.append(value)
+                        texts.append({"text": re.sub(r'\s{2,}', ' ', value), "position": self.fields[field]["position"]})
 
-                    # combined_info에 값 추가
-                    combined_info[f"value_{field}"] = value
+                        # combined_info에 값 추가
+                        combined_info[f"value_{field}"] = value
         
         # 모든 레이어 결합
-        document_group = layers.Group([*text_layers, template_layer, bg_layer])
+        # document_group = layers.Group([*text_layers, template_layer, bg_layer])
+        document_group = layers.Group([*text_layers, template_layer])
         layer = document_group.merge()
         
         # 효과 적용
         # self.effect.apply([layer])
-        self.custom_effect.apply([layer])
+        # self.custom_effect.apply([layer])
+        # self.paper_effect.apply([layer])
+        self.post_effect.apply([layer])
         # 최종 이미지 출력
         image = layer.output(bbox=[0, 0, *size])
         
         # 레이블 생성 (모든 텍스트를 공백으로 연결)
-        label = " ".join(texts)
+        # 텍스트의 순서를 left top -> right bottom 순으로 정렬        
+        new_ordered_texts = []
+        sorted_texts = sorted(texts, key=lambda item: (item['position'][1], item['position'][0]))
+        # 정렬된 결과 출력
+        for item in sorted_texts:
+            new_ordered_texts.append(item['text'])
+
+        label = " ".join(new_ordered_texts)
         label = label.strip()
         label = re.sub(r"\s+", " ", label)
         
@@ -254,6 +318,33 @@ class BusinessRegistration(templates.Template):
         
         return text_layer
 
+    def split_text_to_fit_width(self, text, font, max_width):
+        """텍스트를 최대 너비에 맞게 여러 줄로 분할"""
+        if not text:
+            return []
+            
+        temp_img = Image.new("RGBA", (1, 1), (0, 0, 0, 0))
+        temp_draw = ImageDraw.Draw(temp_img)
+        
+        words = text.split()
+        lines = []
+        current_line = words[0]
+        
+        for word in words[1:]:
+            # 현재 라인과 새 단어를 합쳤을 때 너비 계산
+            test_line = current_line + " " + word
+            bbox = temp_draw.textbbox((0, 0), test_line, font=font)
+            text_width = bbox[2] - bbox[0]
+            
+            if text_width <= max_width:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+        
+        lines.append(current_line)  # 마지막 라인 추가
+        return lines
+
     def init_save(self, root):
         if not os.path.exists(root):
             os.makedirs(root, exist_ok=True)
@@ -267,33 +358,36 @@ class BusinessRegistration(templates.Template):
 
         # split
         split_idx = self.split_indexes[idx % len(self.split_indexes)]
-        output_dirpath = os.path.join(root, self.splits[split_idx])
+        output_dirpath_images = os.path.join(root, self.splits[split_idx], 'images')
+        output_dirpath_annotations = os.path.join(root, self.splits[split_idx], 'annotations')
 
         # save image
         image_filename = f"business_reg_{idx}.jpg"
-        image_filepath = os.path.join(output_dirpath, image_filename)
+        image_filepath = os.path.join(output_dirpath_images, image_filename)
         os.makedirs(os.path.dirname(image_filepath), exist_ok=True)
         image = Image.fromarray(image[..., :3].astype(np.uint8))
         image.save(image_filepath, quality=quality)
 
         # save metadata (gt_json)
-        metadata_filename = "metadata.jsonl"
-        metadata_filepath = os.path.join(output_dirpath, metadata_filename)
-        os.makedirs(os.path.dirname(metadata_filepath), exist_ok=True)
+        # metadata_filename = "metadata.json"
+        annotation_filename = f"{image_filename.split('.')[0]}.json"
+        annotation_filepath = os.path.join(output_dirpath_annotations, annotation_filename)
+        os.makedirs(os.path.dirname(annotation_filepath), exist_ok=True)
 
-        metadata = self.format_metadata(
+        annotation_data = self.format_annotation(
             image_filename=image_filename, 
             keys=["text_sequence", "business_info", "combined_info"], 
             values=[label, business_info, combined_info]
         )
-        with open(metadata_filepath, "a") as fp:
-            json.dump(metadata, fp, ensure_ascii=False)
-            fp.write("\n")
+        with open(annotation_filepath, "a") as annotation_file:
+            json.dump(annotation_data, annotation_file, ensure_ascii=False, indent=4)
+        
+
     
     def end_save(self, root):
         pass
 
-    def format_metadata(self, image_filename: str, keys: List[str], values: List[Any]):
+    def format_annotation(self, image_filename: str, keys: List[str], values: List[Any]):
         """
         Fit gt_parse contents to huggingface dataset's format
         keys and values, whose lengths are equal, are used to constrcut 'gt_parse' field in 'ground_truth' field
@@ -306,10 +400,31 @@ class BusinessRegistration(templates.Template):
         _gt_parse_v = dict()
         for k, v in zip(keys, values):
             _gt_parse_v[k] = v
-        gt_parse = {"gt_parse": _gt_parse_v}
-        gt_parse_str = json.dumps(gt_parse, ensure_ascii=False)
-        metadata = {"file_name": image_filename, "ground_truth": gt_parse_str}
-        return metadata
+
+        # 레이블 포맷팅
+        annotation_data={
+            "image": image_filename,
+            "gt": f"<HEAD>사업자등록증</HEAD>" +
+                f"<사업자종류>{_gt_parse_v['business_info']['사업자종류']}</사업자종류>" +
+                f"<사업자등록번호>{_gt_parse_v['business_info']['등록번호']}</사업자등록번호>" +
+                f"<상호>{_gt_parse_v['business_info']['상호']}</상호>" +
+                f"<대표자>{_gt_parse_v['business_info']['대표자']}</대표자>" +
+                f"<개업연월일>{_gt_parse_v['business_info']['개업일']}</개업연월일>" +
+                f"<법인등록번호>{_gt_parse_v['business_info']['법인등록번호']}</법인등록번호>" +
+                f"<사업장소재지>{_gt_parse_v['business_info']['사업장주소']}</사업장소재지>" +
+                f"<본점소재지>{_gt_parse_v['business_info']['본점주소']}</본점소재지>" +
+                f"<업태>{', '.join(_gt_parse_v['business_info']['업태'])}</업태>" +
+                f"<종목>{', '.join(_gt_parse_v['business_info']['종목'])}</종목>" +
+                f"<발급사유>{_gt_parse_v['business_info']['발급사유']}</발급사유>" +
+                f"<발급일자>{_gt_parse_v['business_info']['발급일']}</발급일자>" +
+                f"<세무서명>{_gt_parse_v['business_info']['세무서']}</세무서명>",
+            "texts": _gt_parse_v['text_sequence']
+        }
+        
+        # gt_parse = {"gt_parse": _gt_parse_v}
+        # gt_parse_str = json.dumps(annotation_data, ensure_ascii=False, indent=4)
+        # metadata = {"file_name": image_filename, "ground_truth": gt_parse_str}
+        return annotation_data
 
 class BusinessInfoGenerator:
     def __init__(self, dataset_path: str = 'resources/business_registration/biz_info.csv'):
@@ -352,8 +467,8 @@ class BusinessInfoGenerator:
             "대표자": biz_registration_data['대표자명'].values[0],
             "개업일": open_date,
             "법인등록번호": corporate_registration_number,
-            "사업장주소": biz_registration_data['사업장소재지(도로명)'].values[0][:30],
-            "본점주소": biz_registration_data['사업장소재지(도로명)'].values[0][:30],
+            "사업장주소": biz_registration_data['사업장소재지(도로명)'].values[0],
+            "본점주소": biz_registration_data['사업장소재지(도로명)'].values[0],
             "업태": biz_types,
             "종목": biz_items,
             "발급사유": issue_reason,
@@ -363,7 +478,7 @@ class BusinessInfoGenerator:
         }
     
     def _read_information(self):
-        information = pd.read_csv(self.dataset_path)
+        information = pd.read_csv(self.dataset_path, dtype={'column_name': str}, low_memory=False)
         with open('dataset/tax_office_list.txt', 'r', encoding='utf-8') as f:
             tax_offices = [line.strip() for line in f.readlines()]
         return information, tax_offices
@@ -371,10 +486,10 @@ class BusinessInfoGenerator:
     def _generate_business_number(self):
         return f"{random.randint(100000, 999999)}-{random.randint(1000000, 9999999)}"
     
-    def _generate_biz_name(self, biz_name):
+    def _generate_biz_name(self, biz_name):        
         if random.random() < 0.5:
             prefixes = ["주식회사", "유한회사", "(주)"]
-            if "주식회사" or "(주)" not in biz_name:
+            if "주식회사" not in biz_name or "(주)" not in biz_name:
                 biz_name = f"{random.choice(prefixes)} {biz_name}"
 
         return biz_name
