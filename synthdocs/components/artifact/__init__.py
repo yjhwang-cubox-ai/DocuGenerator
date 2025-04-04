@@ -35,6 +35,8 @@ from synthdocs.components.artifact.squish import Squish
 from synthdocs.components.artifact.geometric import Geometric
 from synthdocs.components.artifact.dotmatrix import DotMatrix
 from synthdocs.components.artifact.faxify import Faxify
+from synthdocs.components.artifact.inkmottling import InkMottling
+from synthdocs.components.artifact.reflectedlight import ReflectedLight
 
 
 
@@ -78,4 +80,6 @@ __all__ = [
     "Geometric",
     "DotMatrix",
     "Faxify",
+    "InkMottling",
+    "ReflectedLight",
 ]
