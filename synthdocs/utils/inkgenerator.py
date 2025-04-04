@@ -8,7 +8,7 @@ from PIL import ImageFont
 from skimage.morphology import thin
 from sklearn.datasets import make_blobs
 
-from augraphy.augmentations.brightness import Brightness
+from synthdocs.components.artifact.brightness import Brightness
 from synthdocs.utils.lib import add_noise
 from synthdocs.utils.lib import binary_threshold
 from synthdocs.utils.lib import rotate_image

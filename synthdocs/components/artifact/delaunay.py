@@ -78,7 +78,6 @@ class DelaunayTessellation(Component):
         noise_type="random",
         color_list="default",
         color_list_alternate="default",
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -88,8 +87,7 @@ class DelaunayTessellation(Component):
         self.noise_type = noise_type  # apply perlin or not
         self.color_list = color_list
         self.color_list_alternate = color_list_alternate
-        self.p = p
-
+        
     def _edge_points(self, image):
         """
         Generate Random Points on the edge of an document image
@@ -240,11 +238,6 @@ class DelaunayTessellation(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

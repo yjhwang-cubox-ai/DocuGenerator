@@ -55,11 +55,6 @@ class SubtleNoise(Component):
         if meta is None:
             meta = {}
             
-        # Check if we should run based on probability
-        # if random.random() > self.p:
-        #     meta["run"] = False
-        #     return meta
-            
         meta["run"] = True
         
         # Build metadata

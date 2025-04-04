@@ -52,7 +52,6 @@ class LowLightNoise(Component):
         dark_current_value=1.0,
         exposure_time=0.2,
         gain=0.1,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -64,7 +63,6 @@ class LowLightNoise(Component):
         self.dark_current_value = dark_current_value
         self.exposure_time = exposure_time
         self.gain = gain
-        self.p = p
 
     def _add_bias(self, image, value):
         """
@@ -191,11 +189,6 @@ class LowLightNoise(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

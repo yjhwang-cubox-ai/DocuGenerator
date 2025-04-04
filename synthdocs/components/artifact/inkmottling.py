@@ -24,14 +24,12 @@ class InkMottling(Component):
         ink_mottling_alpha_range=(0.2, 0.3),
         ink_mottling_noise_scale_range=(2, 2),
         ink_mottling_gaussian_kernel_range=(3, 5),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
         self.ink_mottling_alpha_range = ink_mottling_alpha_range
         self.ink_mottling_noise_scale_range = ink_mottling_noise_scale_range
         self.ink_mottling_gaussian_kernel_range = ink_mottling_gaussian_kernel_range
-        self.p = p
 
     def sample(self, meta=None):
         """Sample random parameters for this effect.
@@ -43,11 +41,6 @@ class InkMottling(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

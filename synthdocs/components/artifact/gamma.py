@@ -20,12 +20,10 @@ class Gamma(Component):
     def __init__(
         self,
         gamma_range=(0.5, 1.5),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
         self.gamma_range = gamma_range
-        self.p = p
 
     def sample(self, meta=None):
         """Sample random parameters for the gamma adjustment.
@@ -37,11 +35,6 @@ class Gamma(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

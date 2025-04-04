@@ -42,7 +42,6 @@ class WaterMark(Component):
         watermark_location="random",
         watermark_color="random",
         watermark_method="darken",
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -54,7 +53,6 @@ class WaterMark(Component):
         self.watermark_location = watermark_location
         self.watermark_color = watermark_color
         self.watermark_method = watermark_method
-        self.p = p
 
     # Create watermark
     def create_watermark(self, word, font_size, font_thickness, font_type, rotation, color):
@@ -228,11 +226,6 @@ class WaterMark(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

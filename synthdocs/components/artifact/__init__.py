@@ -37,6 +37,7 @@ from synthdocs.components.artifact.dotmatrix import DotMatrix
 from synthdocs.components.artifact.faxify import Faxify
 from synthdocs.components.artifact.inkmottling import InkMottling
 from synthdocs.components.artifact.reflectedlight import ReflectedLight
+from synthdocs.components.artifact.brightness import Brightness
 
 
 
@@ -82,4 +83,5 @@ __all__ = [
     "Faxify",
     "InkMottling",
     "ReflectedLight",
+    "Brightness",
 ]

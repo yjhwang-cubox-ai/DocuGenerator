@@ -21,13 +21,11 @@ class ColorPaper(Component):
         self,
         hue_range=(28, 45),
         saturation_range=(10, 40),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
         self.hue_range = hue_range
         self.saturation_range = saturation_range
-        self.p = p
 
     def add_color(self, image):
         """Add color background into input image.
@@ -83,11 +81,6 @@ class ColorPaper(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run this augmentation based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

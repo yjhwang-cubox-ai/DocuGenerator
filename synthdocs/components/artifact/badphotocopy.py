@@ -66,7 +66,6 @@ class BadPhotoCopy(Component):
         wave_pattern=[True, False],
         edge_effect=[True, False],
         numba_jit=1,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -83,7 +82,6 @@ class BadPhotoCopy(Component):
         self.wave_pattern = random.choice(wave_pattern)
         self.edge_effect = random.choice(edge_effect)
         self.numba_jit = numba_jit
-        self.p = p
         config.DISABLE_JIT = bool(1 - numba_jit)
 
         # clamp values
@@ -213,11 +211,6 @@ class BadPhotoCopy(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

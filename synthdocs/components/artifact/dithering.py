@@ -193,8 +193,7 @@ class Dithering(Component):
         dither_type = meta.get("dither_type", None)
         if dither_type is None:
             if self.dither == "random":
-                # dither_type = random.choice(["ordered", "Floyd Steinberg"])
-                dither_type = random.choice(["ordered"])
+                dither_type = random.choice(["ordered", "Floyd Steinberg"])
             else:
                 dither_type = self.dither
                 

@@ -34,7 +34,6 @@ class GlitchEffect(Component):
         glitch_number_range=(8, 16),
         glitch_size_range=(5, 50),
         glitch_offset_range=(10, 50),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -42,7 +41,6 @@ class GlitchEffect(Component):
         self.glitch_number_range = glitch_number_range
         self.glitch_size_range = glitch_size_range
         self.glitch_offset_range = glitch_offset_range
-        self.p = p
 
     def apply_glitch(self, image, glitch_direction, mask=None, keypoints=None, bounding_boxes=None):
         """Apply glitch effect into the image by shifting patches of images.
@@ -321,11 +319,6 @@ class GlitchEffect(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

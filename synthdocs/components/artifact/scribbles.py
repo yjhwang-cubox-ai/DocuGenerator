@@ -75,7 +75,6 @@ class Scribbles(Component):
         scribbles_text_font="random",
         scribbles_text_rotate_range=(0, 360),
         scribbles_lines_stroke_count_range=(1, 6),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -93,7 +92,6 @@ class Scribbles(Component):
         self.scribbles_text_font = scribbles_text_font
         self.scribbles_text_rotate_range = scribbles_text_rotate_range
         self.scribbles_lines_stroke_count_range = scribbles_lines_stroke_count_range
-        self.p = p
         self.fonts_directory = "fonts/"
 
     def setup_fonts(self):
@@ -185,11 +183,6 @@ class Scribbles(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

@@ -19,14 +19,13 @@ class BrightnessTexturize(Component):
     :type p: float, optional
     """
 
-    def __init__(self, texturize_range=(0.8, 0.99), deviation=0.08, p=1):
+    def __init__(self, texturize_range=(0.8, 0.99), deviation=0.08):
         """Constructor method"""
         super().__init__()
         self.low = texturize_range[0]
         self.high = texturize_range[1]
         self.deviation = deviation
         self.texturize_range = texturize_range
-        self.p = p
 
     def sample(self, meta=None):
         """Sample random parameters for the augmentation.
@@ -38,11 +37,6 @@ class BrightnessTexturize(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

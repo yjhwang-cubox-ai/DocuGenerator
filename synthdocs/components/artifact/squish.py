@@ -3,7 +3,7 @@ import random
 import cv2
 import numpy as np
 
-from augraphy.augmentations.noisylines import NoisyLines
+from synthdocs.components.artifact.noisylines import NoisyLines
 from synthdocs.components.component import Component
 
 
@@ -38,8 +38,7 @@ class Squish(Component):
         squish_number_range=(5, 10),
         squish_distance_range=(5, 7),
         squish_line="random",
-        squish_line_thickness_range=(1, 1),
-        p=1,
+        squish_line_thickness_range=(1, 1)
     ):
         """Constructor method"""
         super().__init__()
@@ -49,7 +48,6 @@ class Squish(Component):
         self.squish_distance_range = squish_distance_range
         self.squish_line = squish_line
         self.squish_line_thickness_range = squish_line_thickness_range
-        self.p = p
 
     def apply_squish(self, image, mask=None, keypoints=None, bounding_boxes=None, squish_direction=0, squish_params=None):
         """Core function to apply the squish effect.
@@ -272,11 +270,6 @@ class Squish(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

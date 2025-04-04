@@ -21,7 +21,6 @@ class ReflectedLight(Component):
         reflected_light_location="random",
         reflected_light_ellipse_angle_range=(0, 360),
         reflected_light_gaussian_kernel_size_range=(5, 310),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -35,7 +34,6 @@ class ReflectedLight(Component):
         self.reflected_light_location = reflected_light_location
         self.reflected_light_ellipse_angle_range = reflected_light_ellipse_angle_range
         self.reflected_light_gaussian_kernel_size_range = reflected_light_gaussian_kernel_size_range
-        self.p = p
 
     def sample(self, meta=None):
         """Sample random parameters for this effect.
@@ -47,11 +45,6 @@ class ReflectedLight(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

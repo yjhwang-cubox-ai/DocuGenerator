@@ -81,7 +81,6 @@ class VoronoiTessellation(Component):
         noise_type="random",
         background_value=(200, 255),
         numba_jit=1,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -91,7 +90,6 @@ class VoronoiTessellation(Component):
         self.noise_type = noise_type
         self.background_value = background_value
         self.numba_jit = numba_jit
-        self.p = p
         config.DISABLE_JIT = bool(1 - numba_jit)
 
     @staticmethod
@@ -206,11 +204,6 @@ class VoronoiTessellation(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

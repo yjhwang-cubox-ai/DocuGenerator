@@ -37,7 +37,6 @@ class ColorShift(Component):
         color_shift_iterations=(2, 3),
         color_shift_brightness_range=(0.9, 1.1),
         color_shift_gaussian_kernel_range=(3, 3),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -46,7 +45,6 @@ class ColorShift(Component):
         self.color_shift_iterations = color_shift_iterations
         self.color_shift_brightness_range = color_shift_brightness_range
         self.color_shift_gaussian_kernel_range = color_shift_gaussian_kernel_range
-        self.p = p
 
     def apply_color_shift(self, image, kernel_value, offset_x_range, offset_y_range, brightness_range):
         """Main function to apply color shift process.
@@ -154,11 +152,6 @@ class ColorShift(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

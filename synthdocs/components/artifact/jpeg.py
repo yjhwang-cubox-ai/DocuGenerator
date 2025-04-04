@@ -19,12 +19,10 @@ class Jpeg(Component):
     def __init__(
         self,
         quality_range=(25, 95),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
         self.quality_range = quality_range
-        self.p = p
 
     def sample(self, meta=None):
         """Sample random parameters for the JPEG compression effect.
@@ -36,11 +34,6 @@ class Jpeg(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

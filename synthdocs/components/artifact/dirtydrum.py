@@ -36,14 +36,13 @@ class DirtyDrum(Component):
 
     def __init__(
         self,
-        line_width_range=(1, 4),
+        line_width_range=(1, 6),
         line_concentration=[0.05, 0.15],
         direction=[0,2],
         noise_intensity=[0.6, 0.95],
         noise_value=(64, 224),
-        ksize=(3, 3),
+        ksize=[(3, 3), (5, 5), (7, 7)],
         sigmaX=0,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -54,7 +53,6 @@ class DirtyDrum(Component):
         self.noise_value = (noise_value[0], noise_value[1])
         self.ksize = random.choice(ksize)
         self.sigmaX = sigmaX
-        self.p = p
 
     def blend(self, img, img_dirty):
         """Blend two images to produce DirtyDrum effect。
@@ -257,11 +255,6 @@ class DirtyDrum(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

@@ -27,7 +27,6 @@ class BindingsAndFasteners(Component):
         edge="random",
         edge_offset=(5, 20),
         use_figshare_library=0,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -42,7 +41,6 @@ class BindingsAndFasteners(Component):
         self.edge = edge
         self.edge_offset = edge_offset
         self.use_figshare_library = use_figshare_library
-        self.p = p
 
     def add_noise(self, image, noise_probability, noise_value_range):
         """Add noise to black pixels of the image.
@@ -743,11 +741,6 @@ class BindingsAndFasteners(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

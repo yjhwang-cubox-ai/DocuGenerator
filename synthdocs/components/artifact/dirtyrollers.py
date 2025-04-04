@@ -27,14 +27,12 @@ class DirtyRollers(Component):
         line_width_range=(8, 12),
         scanline_type=0,
         numba_jit=1,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
         self.line_width_range = line_width_range
         self.scanline_type = scanline_type
         self.numba_jit = numba_jit
-        self.p = p
         config.DISABLE_JIT = bool(1 - numba_jit)
 
     def apply_scanline_mask(self, img, mask, meta_mask, scanline_type):
@@ -163,11 +161,6 @@ class DirtyRollers(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

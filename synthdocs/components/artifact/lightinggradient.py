@@ -47,7 +47,6 @@ class LightingGradient(Component):
         linear_decay_rate=None,
         transparency=None,
         numba_jit=1,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -59,7 +58,6 @@ class LightingGradient(Component):
         self.linear_decay_rate = linear_decay_rate
         self.transparency = transparency
         self.numba_jit = numba_jit
-        self.p = p
         config.DISABLE_JIT = bool(1 - numba_jit)
 
     def generate_parallel_light_mask(
@@ -180,11 +178,6 @@ class LightingGradient(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

@@ -48,7 +48,6 @@ class NoisyLines(Component):
         noisy_lines_length_interval_range=(0, 100),
         noisy_lines_gaussian_kernel_value_range=(3, 5),
         noisy_lines_overlay_method="ink_to_paper",
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -61,7 +60,6 @@ class NoisyLines(Component):
         self.noisy_lines_length_interval_range = noisy_lines_length_interval_range
         self.noisy_lines_gaussian_kernel_value_range = noisy_lines_gaussian_kernel_value_range
         self.noisy_lines_overlay_method = noisy_lines_overlay_method
-        self.p = p
 
     def draw_noisy_lines(self, image, params):
         """Core function to draw noisy lines in the input image.
@@ -173,11 +171,6 @@ class NoisyLines(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

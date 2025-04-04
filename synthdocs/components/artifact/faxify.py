@@ -50,7 +50,6 @@ class Faxify(Component):
         angle=(0, 360),
         sigma=(1, 3),
         numba_jit=1,
-        p=1,
     ):
 
         """Constructor method"""
@@ -65,7 +64,6 @@ class Faxify(Component):
         self.angle = angle
         self.sigma = sigma
         self.numba_jit = numba_jit
-        self.p = p
         config.DISABLE_JIT = bool(1 - numba_jit)
 
     def cv_rotate(self, image, angle):
@@ -251,11 +249,6 @@ class Faxify(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

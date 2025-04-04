@@ -68,8 +68,7 @@ class PatternGenerator(Component):
         n_rotation_range=(10, 15),
         color="random",
         alpha_range=(0.25, 0.5),
-        numba_jit=1,
-        p=1.0,
+        numba_jit=1
     ):
         """Constructor method"""
         super().__init__()
@@ -79,7 +78,6 @@ class PatternGenerator(Component):
         self.color = color
         self.alpha_range = alpha_range
         self.numba_jit = numba_jit
-        self.p = p
         config.DISABLE_JIT = bool(1 - numba_jit)
 
     @staticmethod
@@ -126,11 +124,6 @@ class PatternGenerator(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

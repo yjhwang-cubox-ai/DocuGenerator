@@ -50,7 +50,6 @@ class Markup(Component):
         large_word_mode="random",
         single_word_mode=False,
         repetitions=1,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -63,7 +62,6 @@ class Markup(Component):
         self.repetitions = repetitions
         self.large_word_mode = large_word_mode
         self.single_word_mode = single_word_mode
-        self.p = p
 
     def distribute_line(self, starting_point, ending_point, offset):
         """Create smoothed line from the provided starting and ending point.
@@ -190,11 +188,6 @@ class Markup(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

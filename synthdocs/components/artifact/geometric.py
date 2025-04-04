@@ -25,7 +25,6 @@ class Geometric(Component):
         padding_type="fill",
         padding_value=(255, 255, 255),
         randomize=0,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -39,7 +38,6 @@ class Geometric(Component):
         self.padding = padding
         self.padding_type = padding_type
         self.padding_value = padding_value
-        self.p = p
 
     def randomize_parameters(self, image):
         """Randomize parameters for random geometrical effect.
@@ -627,11 +625,6 @@ class Geometric(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

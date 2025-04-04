@@ -47,7 +47,6 @@ class ShadowCast(Component):
         shadow_opacity_range=(0.2, 0.9),
         shadow_iterations_range=(1, 2),
         shadow_blur_kernel_range=(101, 301),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -59,7 +58,6 @@ class ShadowCast(Component):
         self.shadow_opacity_range = shadow_opacity_range
         self.shadow_iterations_range = shadow_iterations_range
         self.shadow_blur_kernel_range = shadow_blur_kernel_range
-        self.p = p
 
     def generate_shadow_mask(self, image, shadow_color, shadow_width, shadow_height):
         """Generate a shadow mask for the image.
@@ -134,11 +132,6 @@ class ShadowCast(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

@@ -32,7 +32,6 @@ class NoiseTexturize(Component):
         turbulence_range=(2, 5),
         texture_width_range=(100, 500),
         texture_height_range=(100, 500),
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -40,7 +39,6 @@ class NoiseTexturize(Component):
         self.turbulence_range = turbulence_range
         self.texture_width_range = texture_width_range
         self.texture_height_range = texture_height_range
-        self.p = p
 
     def noise(self, width, height, channel, ratio, sigma, texture_width_range, texture_height_range):
         """The function generates an image, filled with gaussian nose. If ratio
@@ -91,11 +89,6 @@ class NoiseTexturize(Component):
         """
         if meta is None:
             meta = {}
-        
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         

@@ -46,7 +46,7 @@ class BusinessRegistration(templates.Template):
 
         self.custom_effect = components.Iterator(
             [
-                components.Switch(components.LowInkRandomLines()),
+                components.Switch(components.BleedThrough()),
             ],
             **config.get("custom_effect", {}),
         )
@@ -235,7 +235,7 @@ class BusinessRegistration(templates.Template):
         
         # 효과 적용
         # self.effect.apply([layer])
-        # self.custom_effect.apply([layer])
+        self.custom_effect.apply([layer])
         # self.paper_effect.apply([layer])
         self.post_effect.apply([layer])
         # 최종 이미지 출력

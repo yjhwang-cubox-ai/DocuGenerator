@@ -27,7 +27,6 @@ class DotMatrix(Component):
         dot_matrix_gaussian_kernel_value_range=(1, 3),
         dot_matrix_rotate_value_range=(0, 360),
         numba_jit=1,
-        p=1,
     ):
         """Constructor method"""
         super().__init__()
@@ -44,7 +43,6 @@ class DotMatrix(Component):
         self.dot_matrix_gaussian_kernel_value_range = dot_matrix_gaussian_kernel_value_range
         self.dot_matrix_rotate_value_range = dot_matrix_rotate_value_range
         self.numba_jit = numba_jit
-        self.p = p
         config.DISABLE_JIT = bool(1 - numba_jit)
 
     @staticmethod
@@ -209,11 +207,6 @@ class DotMatrix(Component):
         """
         if meta is None:
             meta = {}
-            
-        # Check if we should run based on probability
-        if random.random() > self.p:
-            meta["run"] = False
-            return meta
             
         meta["run"] = True
         
