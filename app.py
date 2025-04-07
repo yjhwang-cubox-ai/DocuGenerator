@@ -264,12 +264,12 @@ if document_type == "사업자등록증":
                 
                 with img_col1:
                     st.subheader("원본 이미지")
-                    st.image(st.session_state["original_image"], use_container_width=True)
+                    st.image(st.session_state["original_image"], width = 700)
                 
                 with img_col2:
                     st.subheader("처리된 이미지")
                     if "processed_image" in st.session_state:
-                        st.image(st.session_state["processed_image"], use_container_width=True)
+                        st.image(st.session_state["processed_image"], width = 700)
                         
                         # 처리된 이미지 저장 버튼
                         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
