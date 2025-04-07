@@ -61,58 +61,54 @@ class LinesDegradation(Component):
     def sample(self, meta=None):
         if meta is None:
             meta = {}
-        
-        # Sample line_split_probability
-        line_split_probability = meta.get("line_split_probability", None)
-        if line_split_probability is None:
-            line_split_probability = np.random.uniform(
-                self.line_split_probability[0], 
-                self.line_split_probability[1]
-            )
-        
-        # Sample line_min_length
-        line_min_length = meta.get("line_min_length", None)
-        if line_min_length is None:
-            line_min_length = random.randint(
-                self.line_min_length[0], 
-                self.line_min_length[1]
-            )
-        
-        # Sample long_to_short_ratio
-        long_to_short_ratio = meta.get("long_to_short_ratio", None)
-        if long_to_short_ratio is None:
-            long_to_short_ratio = random.randint(
-                self.line_long_to_short_ratio[0], 
-                self.line_long_to_short_ratio[1]
-            )
-        
-        # Sample line_replacement_probability
-        line_replacement_probability = meta.get("line_replacement_probability", None)
-        if line_replacement_probability is None:
-            line_replacement_probability = np.random.uniform(
-                self.line_replacement_probability[0],
-                self.line_replacement_probability[1],
-            )
-        
-        # Sample gradient_direction
-        gradient_direction = meta.get("gradient_direction", None)
-        if gradient_direction is None:
-            gradient_direction = random.randint(
-                self.line_gradient_direction[0], 
-                self.line_gradient_direction[1]
-            )
-        
-        # Sample line_roi
+            
+        # Sample ROI
         line_roi = meta.get("line_roi", self.line_roi)
         
-        # Create metadata
+        # Sample gradient parameters
+        line_gradient_range = meta.get("line_gradient_range", self.line_gradient_range)
+        gradient_direction = meta.get("gradient_direction", random.randint(
+            self.line_gradient_direction[0], 
+            self.line_gradient_direction[1]
+        ))
+        
+        # Sample line split parameters
+        line_split_probability = meta.get("line_split_probability", np.random.uniform(
+            self.line_split_probability[0], 
+            self.line_split_probability[1]
+        ))
+        
+        # Sample replacement parameters
+        line_replacement_value = meta.get("line_replacement_value", self.line_replacement_value)
+        line_replacement_probability = meta.get("line_replacement_probability", np.random.uniform(
+            self.line_replacement_probability[0],
+            self.line_replacement_probability[1],
+        ))
+        
+        # Sample line dimension parameters
+        line_min_length = meta.get("line_min_length", random.randint(
+            self.line_min_length[0], 
+            self.line_min_length[1]
+        ))
+        long_to_short_ratio = meta.get("long_to_short_ratio", random.randint(
+            self.line_long_to_short_ratio[0], 
+            self.line_long_to_short_ratio[1]
+        ))
+        
+        # Sample thickness
+        line_replacement_thickness = meta.get("line_replacement_thickness", self.line_replacement_thickness)
+        
+        # Create the metadata
         meta = {
+            "line_roi": line_roi,
+            "line_gradient_range": line_gradient_range,
+            "gradient_direction": gradient_direction,
             "line_split_probability": line_split_probability,
+            "line_replacement_value": line_replacement_value,
             "line_min_length": line_min_length,
             "long_to_short_ratio": long_to_short_ratio,
             "line_replacement_probability": line_replacement_probability,
-            "gradient_direction": gradient_direction,
-            "line_roi": line_roi,
+            "line_replacement_thickness": line_replacement_thickness,
         }
         
         return meta
@@ -121,18 +117,20 @@ class LinesDegradation(Component):
         meta = self.sample(meta)
         
         for layer in layers:
-            # Get parameters from metadata
+            image = layer.image.copy()
+            
+            # Get parameters from meta
+            line_roi = meta["line_roi"]
+            line_gradient_range = meta["line_gradient_range"]
+            gradient_direction = meta["gradient_direction"]
             line_split_probability = meta["line_split_probability"]
+            line_replacement_value = meta["line_replacement_value"]
             line_min_length = meta["line_min_length"]
             long_to_short_ratio = meta["long_to_short_ratio"]
             line_replacement_probability = meta["line_replacement_probability"]
-            gradient_direction = meta["gradient_direction"]
-            line_roi = meta["line_roi"]
+            line_replacement_thickness = meta["line_replacement_thickness"]
             
-            # Get image
-            image = layer.image.copy().astype(np.uint8)
-            
-            # Calculate ROI
+            # ROI calculation
             ysize, xsize = image.shape[:2]
             xstart, ystart, xend, yend = line_roi
             
@@ -146,119 +144,126 @@ class LinesDegradation(Component):
             if yend >= 0 and yend <= 1 and isinstance(yend, float):
                 yend = int(yend * ysize)
                 
+            # Extract ROI
             image_roi = image[ystart:yend, xstart:xend]
-
-            # Convert to grayscale
+            
+            # Convert to grayscale if needed
             if len(image.shape) > 2:
                 image_gray = cv2.cvtColor(image_roi, cv2.COLOR_BGR2GRAY)
             else:
                 image_gray = image_roi
-
-            # Create mask of random value
+            
+            # Create random mask for line splitting
             image_random = np.random.uniform(0, 1, size=(image_gray.shape[0], image_gray.shape[1]))
-
-            # Get gradients in horizontal and vertical direction
+            
+            # Calculate gradients
             gx, gy = np.gradient(image_gray, edge_order=1)
-
-            # Horizontal or both gradients
+            
+            # Process horizontal or both gradients
             if gradient_direction != 1:
-                # Remove negative values
-                gx = abs(gx)
-
+                # Process horizontal gradients
+                gx = abs(gx)  # Remove negative values
+                
                 # Remove gradients beyond the selected range
-                gx[gx <= self.line_gradient_range[0]] = 0
-                gx[gx > self.line_gradient_range[1]] = 0
-
+                gx[gx <= line_gradient_range[0]] = 0
+                gx[gx > line_gradient_range[1]] = 0
+                
                 # Randomly remove line value
                 gx[image_random < line_split_probability] = 0
                 
                 # Get contours of lines
-                contours_x, hierarchy = cv2.findContours(
+                contours_x, _ = cv2.findContours(
                     gx.astype("uint8"),
                     cv2.RETR_EXTERNAL,
                     cv2.CHAIN_APPROX_NONE,
                 )
                 
-                # Get mask of lines
+                # Get mask of horizontal lines
                 mask_x = np.zeros_like(image_gray)
                 for contour in contours_x:
                     x, y, w, h = cv2.boundingRect(contour)
-                    # For horizontal line
+                    # Check for horizontal line criteria
                     if (
                         w > h * long_to_short_ratio
                         and w > line_min_length
                         and np.random.random() < line_replacement_probability
                     ):
+                        thickness = random.randint(line_replacement_thickness[0], line_replacement_thickness[1])
                         cv2.drawContours(
                             mask_x,
-                            contour,
+                            [contour],
                             -1,
                             (255, 255, 255),
-                            random.randint(self.line_replacement_thickness[0], self.line_replacement_thickness[1]),
+                            thickness,
                         )
-
-            # Vertical or both gradients
+            
+            # Process vertical or both gradients
             if gradient_direction != 0:
-                # Remove negative values
-                gy = abs(gy)
-
+                # Process vertical gradients
+                gy = abs(gy)  # Remove negative values
+                
                 # Remove gradients beyond the selected range
-                gy[gy <= self.line_gradient_range[0]] = 0
-                gy[gy > self.line_gradient_range[1]] = 0
-
+                gy[gy <= line_gradient_range[0]] = 0
+                gy[gy > line_gradient_range[1]] = 0
+                
                 # Randomly remove line value
                 gy[image_random < line_split_probability] = 0
                 
                 # Get contours of lines
-                contours_y, hierarchy = cv2.findContours(
+                contours_y, _ = cv2.findContours(
                     gy.astype("uint8"),
                     cv2.RETR_EXTERNAL,
                     cv2.CHAIN_APPROX_NONE,
                 )
                 
-                # Get mask of lines
+                # Get mask of vertical lines
                 mask_y = np.zeros_like(image_gray)
                 for contour in contours_y:
                     x, y, w, h = cv2.boundingRect(contour)
-                    # For vertical line
+                    # Check for vertical line criteria
                     if (
                         h > w * long_to_short_ratio
                         and h > line_min_length
                         and np.random.random() < line_replacement_probability
                     ):
+                        thickness = random.randint(line_replacement_thickness[0], line_replacement_thickness[1])
                         cv2.drawContours(
                             mask_y,
-                            contour,
+                            [contour],
                             -1,
                             (255, 255, 255),
-                            random.randint(self.line_replacement_thickness[0], self.line_replacement_thickness[1]),
+                            thickness,
                         )
-
-            # Merge mask and set max value = 1
+            
+            # Merge masks based on gradient direction
             if gradient_direction == 2:
                 mask_xy = mask_x + mask_y
             elif gradient_direction == 1:
                 mask_xy = mask_y
             else:
                 mask_xy = mask_x
+                
+            # Normalize mask values
             mask_xy[mask_xy > 0] = 1
-
-            # Create mask with replacement value
+            
+            # Create replacement values mask
             replacement_mask = np.random.randint(
-                self.line_replacement_value[0],
-                self.line_replacement_value[1] + 1,
+                line_replacement_value[0],
+                line_replacement_value[1] + 1,
                 size=(yend - ystart, xend - xstart),
             )
-
-            # Replace detected lines with line value
+            
+            # Apply replacement to the image
             if len(image.shape) > 2:
-                # Skip alpha layer
-                for i in range(min(3, image.shape[2])):
+                # For color images, apply to each channel except alpha
+                channels = 3 if image.shape[2] >= 3 else image.shape[2]
+                for i in range(channels):
                     image[ystart:yend, xstart:xend, i][mask_xy > 0] = replacement_mask[mask_xy > 0]
             else:
+                # For grayscale images
                 image[ystart:yend, xstart:xend][mask_xy > 0] = replacement_mask[mask_xy > 0]
-
-            # Update layer image
+            
+            # Update the layer's image
             layer.image = image
-        
+            
         return meta
