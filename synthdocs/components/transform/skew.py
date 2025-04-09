@@ -7,8 +7,8 @@ MIT license
 import cv2
 import numpy as np
 
-from synthtiger.components.component import Component
-from synthtiger.layers import Group
+from synthdocs.components.component import Component
+from synthdocs.layers import Group
 
 
 class Skew(Component):

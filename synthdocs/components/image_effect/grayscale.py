@@ -4,8 +4,8 @@ Copyright (c) 2021-present NAVER Corp.
 MIT license
 """
 
-from synthtiger import utils
-from synthtiger.components.component import Component
+from synthdocs import utils
+from synthdocs.components.component import Component
 
 
 class Grayscale(Component):

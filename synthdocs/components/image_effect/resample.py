@@ -7,7 +7,7 @@ MIT license
 import imgaug.augmenters as iaa
 import numpy as np
 
-from synthtiger.components.component import Component
+from synthdocs.components.component import Component
 
 
 class Resample(Component):

@@ -6,10 +6,10 @@ MIT license
 
 import numpy as np
 
-from synthtiger import utils
-from synthtiger.components.color import RGB
-from synthtiger.components.component import Component
-from synthtiger.layers import Layer
+from synthdocs import utils
+from synthdocs.components.color import RGB
+from synthdocs.components.component import Component
+from synthdocs.layers import Layer
 
 
 class TextBorder(Component):

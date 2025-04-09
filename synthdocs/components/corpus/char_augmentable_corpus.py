@@ -8,8 +8,8 @@ from collections import Counter
 
 import numpy as np
 
-from synthtiger import utils
-from synthtiger.components.corpus.base_corpus import BaseCorpus
+from synthdocs import utils
+from synthdocs.components.corpus.base_corpus import BaseCorpus
 
 
 class CharAugmentableCorpus(BaseCorpus):

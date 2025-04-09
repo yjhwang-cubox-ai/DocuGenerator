@@ -8,8 +8,8 @@ import cv2
 import numpy as np
 import pytweening
 
-from synthtiger import utils
-from synthtiger.components.component import Component
+from synthdocs import utils
+from synthdocs.components.component import Component
 
 
 class Shadow(Component):

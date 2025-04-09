@@ -4,8 +4,8 @@ Copyright (c) 2021-present NAVER Corp.
 MIT license
 """
 
-from synthtiger import utils
-from synthtiger.layers.layer import Layer
+from synthdocs import utils
+from synthdocs.layers.layer import Layer
 
 
 class RectLayer(Layer):

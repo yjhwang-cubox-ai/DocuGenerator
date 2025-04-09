@@ -9,8 +9,8 @@ import sys
 
 import numpy as np
 
-from synthtiger import utils
-from synthtiger.components.component import Component
+from synthdocs import utils
+from synthdocs.components.component import Component
 
 
 class BaseCorpus(Component):

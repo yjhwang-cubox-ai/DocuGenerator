@@ -7,8 +7,8 @@ MIT license
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from synthtiger import utils
-from synthtiger.layers.layer import Layer
+from synthdocs import utils
+from synthdocs.layers.layer import Layer
 
 
 class TextLayer(Layer):

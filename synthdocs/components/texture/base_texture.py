@@ -9,8 +9,8 @@ import os
 import numpy as np
 from PIL import Image, ImageOps
 
-from synthtiger import utils
-from synthtiger.components.component import Component
+from synthdocs import utils
+from synthdocs.components.component import Component
 
 
 class BaseTexture(Component):

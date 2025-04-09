@@ -4,7 +4,7 @@ Copyright (c) 2021-present NAVER Corp.
 MIT license
 """
 
-from synthtiger.components.component import Component
+from synthdocs.components.component import Component
 
 
 class Iterator(Component):

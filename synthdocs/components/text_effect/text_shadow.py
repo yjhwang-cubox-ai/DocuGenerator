@@ -6,8 +6,8 @@ MIT license
 
 import numpy as np
 
-from synthtiger.components.color import RGB
-from synthtiger.components.component import Component
+from synthdocs.components.color import RGB
+from synthdocs.components.component import Component
 
 
 class TextShadow(Component):

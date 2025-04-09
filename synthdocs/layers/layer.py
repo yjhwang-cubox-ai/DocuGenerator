@@ -9,7 +9,7 @@ from typing import Iterable
 import cv2
 import numpy as np
 
-from synthtiger import utils
+from synthdocs import utils
 
 
 class Layer:

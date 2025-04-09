@@ -6,7 +6,7 @@ MIT license
 
 import numpy as np
 
-from synthtiger.components.corpus.base_corpus import BaseCorpus
+from synthdocs.components.corpus.base_corpus import BaseCorpus
 
 
 class LengthAugmentableCorpus(BaseCorpus):
