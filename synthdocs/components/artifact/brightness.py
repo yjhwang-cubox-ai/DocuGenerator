@@ -122,6 +122,9 @@ class Brightness(Component):
         value = meta["value"]
         min_brightness = meta["min_brightness"]
         min_brightness_value = meta["min_brightness_value"]
+
+        if isinstance(layers, np.ndarray):
+            layers = [layers]
         
         for layer in layers:
             image = layer.image.copy()
@@ -161,3 +164,43 @@ class Brightness(Component):
             layer.image = image_output
             
         return meta
+
+    def __call__(self, image):
+        image_copy = image.copy()
+            
+        # Check for alpha channel
+        has_alpha = 0
+        if len(image.shape) > 2:
+            is_gray = 0
+            if image.shape[2] == 4:
+                has_alpha = 1
+                image_copy, image_alpha = image_copy[:, :, :3], image_copy[:, :, 3]
+        else:
+            is_gray = 1
+            image_copy = cv2.cvtColor(image_copy, cv2.COLOR_GRAY2BGR)
+        
+        value = random.uniform(self.brightness_range[0], self.brightness_range[1])
+
+        # Apply brightness adjustment
+        hsv = cv2.cvtColor(image_copy.astype("uint8"), cv2.COLOR_BGR2HSV)
+
+        hsv = np.array(hsv, dtype=np.float64)
+        hsv[:, :, 2] = hsv[:, :, 2] * value
+        hsv[:, :, 2][hsv[:, :, 2] > 255] = 255
+
+        # Increase intensity for areas with intensity below min brightness value
+        # if min_brightness and min_brightness_value is not None:
+        #     v = self.adjust_min_brightness(hsv[:, :, 2], min_brightness_value)
+        #     hsv[:, :, 2] = v
+
+        hsv = np.array(hsv, dtype=np.uint8)
+        image_output = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+        # Return image in original color format
+        if is_gray:
+            image_output = cv2.cvtColor(image_output, cv2.COLOR_BGR2GRAY)
+        if has_alpha:
+            image_output = np.dstack((image_output, image_alpha))
+
+        # Update the layer's image
+        return image_output

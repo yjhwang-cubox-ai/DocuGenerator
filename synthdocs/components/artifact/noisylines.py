@@ -59,7 +59,8 @@ class NoisyLines(Component):
         self.noisy_lines_random_noise_intensity_range = noisy_lines_random_noise_intensity_range
         self.noisy_lines_length_interval_range = noisy_lines_length_interval_range
         self.noisy_lines_gaussian_kernel_value_range = noisy_lines_gaussian_kernel_value_range
-        self.noisy_lines_overlay_method = noisy_lines_overlay_method
+        self.noisy_lines_overlay_method = noisy_lines_overlay_method   
+    
 
     def draw_noisy_lines(self, image, params):
         """Core function to draw noisy lines in the input image.
@@ -254,3 +255,45 @@ class NoisyLines(Component):
             layer.image = image_output
             
         return meta
+
+    # def __call__(self, image):
+    #     image_copy = image.copy()
+
+    #     # convert and make sure image is color image
+    #     has_alpha = 0
+    #     if len(image.shape) > 2:
+    #         is_gray = 0
+    #         if image.shape[2] == 4:
+    #             has_alpha = 1
+    #             image, image_alpha = image[:, :, :3], image[:, :, 3]
+    #     else:
+    #         is_gray = 1
+    #         image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
+    #     # generate lines direction
+    #     if self.noisy_lines_direction == "random":
+    #         noisy_lines_direction = random.choice([0, 1, 2])
+    #     else:
+    #         noisy_lines_direction = self.noisy_lines_direction
+
+    #     # horizontal lines
+    #     if noisy_lines_direction == 0:
+    #         image_output = self.draw_noisy_lines(image)
+    #     # vertical lines
+    #     elif noisy_lines_direction == 1:
+    #         # use copy to solve the problem mentioned here:
+    #         # https://stackoverflow.com/questions/16461560/layout-of-the-output-array-img-is-incompatible-with-cvmat-stepndims-1-el
+    #         image_rotated = np.rot90(image, 3).copy()
+    #         image_output = np.rot90(self.draw_noisy_lines(image_rotated), 1).copy()
+    #     # horizontal and vertical lines
+    #     else:
+    #         image_output = np.rot90(self.draw_noisy_lines(image), 3).copy()
+    #         image_output = np.rot90(self.draw_noisy_lines(image_output), 1).copy()
+
+    #     # return image follows the input image color channel
+    #     if is_gray:
+    #         image_output = cv2.cvtColor(image_output, cv2.COLOR_BGR2GRAY)
+    #     if has_alpha:
+    #         image_output = np.dstack((image_output, image_alpha))
+
+    #     return image_output

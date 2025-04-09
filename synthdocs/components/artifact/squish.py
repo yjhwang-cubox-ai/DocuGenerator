@@ -5,6 +5,7 @@ import numpy as np
 
 from synthdocs.components.artifact.noisylines import NoisyLines
 from synthdocs.components.component import Component
+from synthdocs.layers.layer import Layer
 
 
 class Squish(Component):
@@ -67,6 +68,8 @@ class Squish(Component):
         :type squish_params: dict, optional
         """
         ysize, xsize = image.shape[:2]
+
+        layer = Layer(image=image)
 
         # Use passed parameters or instance defaults
         if squish_params is None:
@@ -253,12 +256,12 @@ class Squish(Component):
                         noisy_lines_gaussian_kernel_value_range=(1, 1),
                         noisy_lines_overlay_method="ink_to_paper",
                     )
-                    image = noisy_lines(image)
+                    noisy_lines.apply([layer])
                 except Exception as e:
                     # If NoisyLines fails, we'll just continue without the lines
                     print(f"Warning: Couldn't apply noisy lines: {str(e)}")
 
-        return image, mask, keypoints, bounding_boxes
+        return layer.image, mask, keypoints, bounding_boxes
 
     def sample(self, meta=None):
         """Sample random parameters for this effect.

@@ -40,9 +40,6 @@ from synthdocs.components.artifact.reflectedlight import ReflectedLight
 from synthdocs.components.artifact.brightness import Brightness
 
 
-
-
-
 __all__ = [
     "InkColorSwap",
     "LinesDegradation",

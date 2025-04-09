@@ -379,8 +379,7 @@ class GlitchEffect(Component):
                 color_shift_offset_y_range=(3, 5),
                 color_shift_iterations=(1, 2),
                 color_shift_brightness_range=(0.9, 1.1),
-                color_shift_gaussian_kernel_range=(1, 3),
-                p=1,
+                color_shift_gaussian_kernel_range=(1, 3)
             )
             layer.image = image
             # Note: Assuming ColorShift is also modified to Component structure

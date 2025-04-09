@@ -153,6 +153,7 @@ class VoronoiTessellation(Component):
         obj_noise = Noise()
         perlin_x = np.zeros((height, width))
         perlin_y = np.zeros((height, width))
+        
         if perlin:
             perlin_x = np.array(
                 [
@@ -169,12 +170,17 @@ class VoronoiTessellation(Component):
                     for x in range(width)
                 ],
             )
-        nx = [random.randrange(width) for _ in range(num_cells)]  # x-coordinates of random points
-        ny = [random.randrange(height) for _ in range(num_cells)]  # y-coordinates of random points
+        
+        # 랜덤 포인트 생성
+        nx = [random.randrange(width) for _ in range(num_cells)]
+        ny = [random.randrange(height) for _ in range(num_cells)]
         ng = [
             random.randrange(background_value[0], background_value[1]) for _ in range(num_cells)
-        ]  # go through the number of cells and assign color
+        ]
+        
         nsize = np.zeros(num_cells, dtype=np.int32)
+        
+        # Voronoi 생성
         img_array = self.generate_voronoi(
             width,
             height,
@@ -183,15 +189,13 @@ class VoronoiTessellation(Component):
             (nx, ny, ng),
             (perlin_x, perlin_y),
         )
-        # try if it is able to save and read image properly, might facing permission issue
-        try:
-            image = Image.fromarray(img_array)
-            image.save(os.getcwd() + "/Voronoi_example.png", "PNG", dpi=(300, 300))
-            # reads it in a format so that it can be applied as a background pattern to the original image
-            mesh = cv2.imread(os.getcwd() + "/Voronoi_example.png")
-            os.remove(os.getcwd() + "/Voronoi_example.png")
-        except Exception:
-            mesh = img_array
+        
+        # numpy 배열을 직접 BGR 이미지로 변환
+        if len(img_array.shape) == 2:  # 그레이스케일인 경우
+            mesh = cv2.cvtColor(img_array, cv2.COLOR_GRAY2BGR)
+        else:
+            mesh = img_array.copy()
+        
         return mesh
 
     def sample(self, meta=None):
@@ -207,52 +211,73 @@ class VoronoiTessellation(Component):
             
         meta["run"] = True
         
-        # Determine if Perlin noise should be applied
-        perlin = meta.get("perlin", None)
-        if perlin is None:
-            if self.noise_type == "random":
-                perlin = random.choice([True, False])
-            elif self.noise_type == "perlin":
-                perlin = True
-            else:
-                perlin = False
-        
-        # Set width and height based on perlin flag
-        if perlin:
-            width = height = meta.get("size", random.choice([100, 120, 140, 160, 180, 200]))
-            lst = [50, 70, 80, 90]
-        else:
-            width = height = meta.get("size", random.choice(
-                [200, 210, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400]
-            ))
-            lst = [100, 120, 140, 150, 160]
+        try:
+            # Determine if Perlin noise should be applied
+            perlin = meta.get("perlin", None)
+            if perlin is None:
+                if self.noise_type == "random":
+                    perlin = random.choice([True, False])
+                elif self.noise_type == "perlin":
+                    perlin = True
+                else:
+                    perlin = False
             
-        # Find random divisor for window size
-        find_random_divisor = (
-            lambda lst, b: random.choice([x for x in lst if x != 0 and b % x == 0])
-            if any(x != 0 and b % x == 0 for x in lst)
-            else 40
-        )
-        ws = meta.get("ws", find_random_divisor(lst, width))
-        
-        # Sample other parameters
-        mult = meta.get("mult", random.randint(self.mult_range[0], self.mult_range[1]))
-        num_cells = meta.get("num_cells", random.randint(
-            self.num_cells_range[0], 
-            self.num_cells_range[1]
-        ))
-        
-        # Build metadata
-        meta.update({
-            "perlin": perlin,
-            "width": width,
-            "height": height,
-            "mult": mult,
-            "num_cells": num_cells,
-            "ws": ws,
-            "seed": self.seed,
-            "background_value": self.background_value
-        })
+            # Set width and height based on perlin flag
+            if perlin:
+                width = height = meta.get("size", random.choice([100, 120, 140, 160, 180, 200]))
+                lst = [50, 70, 80, 90]
+            else:
+                width = height = meta.get("size", random.choice(
+                    [200, 210, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400]
+                ))
+                lst = [100, 120, 140, 150, 160]
+            
+            # Find random divisor for window size with error handling
+            def find_random_divisor(lst, b):
+                try:
+                    valid_divisors = [x for x in lst if x != 0 and b % x == 0]
+                    return random.choice(valid_divisors) if valid_divisors else 40
+                except Exception:
+                    return 40
+                
+            ws = meta.get("ws", find_random_divisor(lst, width))
+            
+            # Sample other parameters with validation
+            mult = meta.get("mult", max(min(
+                random.randint(self.mult_range[0], self.mult_range[1]),
+                self.mult_range[1]
+            ), self.mult_range[0]))
+            
+            num_cells = meta.get("num_cells", max(min(
+                random.randint(self.num_cells_range[0], self.num_cells_range[1]),
+                self.num_cells_range[1]
+            ), self.num_cells_range[0]))
+            
+            # Build metadata
+            meta.update({
+                "perlin": perlin,
+                "width": width,
+                "height": height,
+                "mult": mult,
+                "num_cells": num_cells,
+                "ws": ws,
+                "seed": self.seed,
+                "background_value": self.background_value
+            })
+            
+        except Exception as e:
+            print(f"Error during parameter sampling: {e}")
+            # 기본값 설정
+            meta.update({
+                "perlin": False,
+                "width": 200,
+                "height": 200,
+                "mult": self.mult_range[0],
+                "num_cells": self.num_cells_range[0],
+                "ws": 40,
+                "seed": self.seed,
+                "background_value": self.background_value
+            })
         
         return meta
 
@@ -283,42 +308,72 @@ class VoronoiTessellation(Component):
         background_value = meta["background_value"]
         
         for layer in layers:
-            image = layer.image.copy()
-            
-            # Check for alpha channel
-            has_alpha = 0
-            if len(image.shape) > 2 and image.shape[2] == 4:
-                has_alpha = 1
-                image, image_alpha = image[:, :, :3], image[:, :, 3]
-            
-            h, w = image.shape[:2]
-            
-            # Generate the Voronoi mesh
-            voronoi_mesh = self.apply_augmentation(
-                width, height, mult, num_cells, perlin, background_value, seed
-            )
-            
-            # Resize mesh to window size
-            voronoi_mesh = cv2.resize(voronoi_mesh, (ws, ws), interpolation=cv2.INTER_LINEAR)
-            
-            # Adjust mesh format to match image
-            if len(image.shape) < 3 and len(voronoi_mesh.shape) > 2:
-                voronoi_mesh = cv2.cvtColor(voronoi_mesh, cv2.COLOR_RGB2GRAY)
-            elif len(image.shape) > 2 and len(voronoi_mesh.shape) < 3:
-                voronoi_mesh = cv2.cvtColor(voronoi_mesh, cv2.COLOR_GRAY2BGR)
-            
-            # Apply pattern to image
-            sw = PatternMaker()
-            # to ensure the voronoi tessellation covers the whole image,
-            # original image is padded and voronoi_mesh passes through it like a sliding window
-            result = sw.make_patterns(image, voronoi_mesh, ws)
-            result = result[ws : h + ws, ws : w + ws]
-            
-            # Restore alpha channel if needed
-            if has_alpha:
-                result = np.dstack((result, image_alpha))
+            try:
+                image = layer.image.copy()
                 
-            # Update the layer's image
-            layer.image = result
-            
+                # Check for alpha channel
+                has_alpha = 0
+                if len(image.shape) > 2 and image.shape[2] == 4:
+                    has_alpha = 1
+                    image, image_alpha = image[:, :, :3], image[:, :, 3]
+                
+                h, w = image.shape[:2]
+                
+                # Generate the Voronoi mesh with error handling
+                try:
+                    voronoi_mesh = self.apply_augmentation(
+                        width, height, mult, num_cells, perlin, background_value, seed
+                    )
+                    
+                    if voronoi_mesh is None or voronoi_mesh.size == 0:
+                        print("Failed to generate Voronoi mesh")
+                        continue
+                    
+                    # Resize mesh to window size with error handling
+                    if ws > 0 and isinstance(ws, (int, float)):
+                        try:
+                            voronoi_mesh = cv2.resize(
+                                voronoi_mesh, 
+                                (ws, ws), 
+                                interpolation=cv2.INTER_LINEAR
+                            )
+                        except cv2.error as e:
+                            print(f"Error during resize: {e}")
+                            continue
+                    else:
+                        print(f"Invalid window size: {ws}")
+                        continue
+                    
+                    # Adjust mesh format to match image
+                    if len(image.shape) < 3 and len(voronoi_mesh.shape) > 2:
+                        voronoi_mesh = cv2.cvtColor(voronoi_mesh, cv2.COLOR_RGB2GRAY)
+                    elif len(image.shape) > 2 and len(voronoi_mesh.shape) < 3:
+                        voronoi_mesh = cv2.cvtColor(voronoi_mesh, cv2.COLOR_GRAY2BGR)
+                    
+                    # Apply pattern to image
+                    sw = PatternMaker()
+                    # Ensure proper padding
+                    result = sw.make_patterns(image, voronoi_mesh, ws)
+                    
+                    # Validate result dimensions
+                    if result is not None and result.shape[0] >= h + ws and result.shape[1] >= w + ws:
+                        result = result[ws : h + ws, ws : w + ws]
+                        
+                        # Restore alpha channel if needed
+                        if has_alpha:
+                            result = np.dstack((result, image_alpha))
+                        
+                        # Update the layer's image
+                        layer.image = result
+                    else:
+                        print("Invalid pattern result dimensions")
+                    
+                except Exception as e:
+                    print(f"Error during Voronoi generation: {e}")
+                    continue
+                
+            except Exception as e:
+                print(f"Error processing layer: {e}")
+                continue
+        
         return meta
