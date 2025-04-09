@@ -19,7 +19,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-o", "result",
-                "-c", "10",
+                "-c", "30",
                 "-w", "8",
                 "-v", "examples/businessRegistration/business_registration_generator.py",
                 "BusinessRegistration",                
@@ -27,5 +27,17 @@
             ],
             "justMyCode": false
         },
+        {
+            "name": "Streamlit Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/data/anaconda3/envs/synthtiger/bin/streamlit", // Windows일 경우: "${workspaceFolder}/venv/Scripts/streamlit.exe"
+            "args": [
+              "run",
+              "app.py" // 당신의 streamlit 파일 이름
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
     ]
 }

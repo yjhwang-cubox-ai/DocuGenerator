@@ -2,20 +2,19 @@
 사업자 등록증 이미지 생성기 - 항목별 다른 폰트 크기 적용
 """
 import json
+import cv2
 import os
 import re
 import random
 import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
-from synthdocs import elements, components, layers, templates, utils
+from synthdocs import components, layers, templates, utils
 from synthdocs.elements import Background, Document, Paper
 from PIL import Image, ImageDraw, ImageFont
 from blend_modes import normal, darken_only, lighten_only, multiply
-
-# 문서 사이즈 고정 -> 데이터 수정후 다양하게 변형하는 걸로
 
 class BusinessRegistration(templates.Template):
     def __init__(self, config=None, split_ratio: List[float] = [0.8, 0.1, 0.1]):
@@ -23,15 +22,177 @@ class BusinessRegistration(templates.Template):
         if config is None:
             config = {}
 
-        self.quality = config.get("quality", [80, 95])
-        # 사업자 등록증은 가로 방향으로 고정
-        self.landscape = 1.0
-        # 사업자 등록증 크기 설정
-        self.width = config.get("width", 1478)
+        self.quality = config.get("quality", [80, 95])        
+        self.landscape = 1.0 # 사업자 등록증은 가로 방향으로 고정
+        self.apply_texture = 0.3
+        self.width = config.get("width", 1478) # 사업자 등록증 크기 설정 -> 글자 배치때문에 고정 사이즈로!
         self.height = config.get("height", 2074)
         self.background = Background(config.get("background", {}))
-        # self.document = Document(config.get("document", {}))
-        self.paper = Paper(config.get("document", {}).get("paper", {}))
+        self.paper = Paper(config.get("paper", {}))
+        self.ink_effect = components.Iterator(
+            [
+                components.Switch(components.InkColorSwap()),
+                components.Switch(components.LinesDegradation()),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.Dithering(),
+                            components.InkBleed(),
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.InkShifter(),
+                            components.BleedThrough(),
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.Hollow(),
+                            components.Letterpress(),
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.LowInkRandomLines(),
+                            components.LowInkPeriodicLines(),
+                        ]
+                    ),
+                ),
+            ],            
+            **config.get("ink_effect", {}),
+        )
+
+        self.paper_effect = components.Iterator(
+            [
+                components.Switch(components.ColorPaper()),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.DelaunayTessellation(),
+                            components.PatternGenerator(),
+                            components.VoronoiTessellation(),                            
+                        ]
+                    ),
+                ),
+                components.Switch(components.WaterMark()),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.Iterator(
+                                [
+                                    components.NoiseTexturize(),
+                                    components.BrightnessTexturize(),
+                                ]
+                            ),
+                            components.Iterator(
+                                [
+                                    components.BrightnessTexturize(),
+                                    components.NoiseTexturize(),
+                                ]
+                            )
+                            
+                        ]
+                    ),
+                ),
+            ],
+            **config.get("paper_effect", {}),
+        )
+
+        self.post_effect = components.Iterator(
+            [
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.GlitchEffect(),
+                            components.ColorShift(),
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.DirtyDrum(),
+                            components.DirtyRollers(),
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.LightingGradient(),
+                            components.Brightness(),
+                            components.Gamma(),
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.SubtleNoise(),
+                            components.Jpeg()
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.Markup(),
+                            components.Scribbles()
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.BadPhotoCopy(),
+                            components.ShadowCast(),
+                            components.LowLightNoise()
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.NoisyLines(),
+                            components.BindingsAndFasteners()
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.Squish(),
+                            components.Geometric()
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.DotMatrix(),
+                            components.Faxify()
+                        ]
+                    ),
+                ),
+                components.Switch(
+                    components.Selector(
+                        [
+                            components.InkMottling(),
+                            components.ReflectedLight()
+                        ]
+                    ),
+                ),
+            ],
+            **config.get("post_effect", {}),
+        )
+
         self.effect = components.Iterator(
             [
                 components.Switch(components.RGB()),
@@ -42,27 +203,6 @@ class BusinessRegistration(templates.Template):
                 components.Switch(components.GaussianBlur()),
             ],
             **config.get("effect", {}),
-        )
-
-        self.custom_effect = components.Iterator(
-            [
-                components.Switch(components.BleedThrough()),
-            ],
-            **config.get("custom_effect", {}),
-        )
-
-        self.paper_effect = components.Iterator(
-            [
-                components.Switch(components.BrightnessTexturize()),
-            ],
-            **config.get("paper_effect", {}),
-        )
-
-        self.post_effect = components.Iterator(
-            [
-                components.Switch(components.ReflectedLight()),
-            ],
-            **config.get("post_effect", {}),
         )
 
         # 사업자 등록증 배경이미지
@@ -118,21 +258,17 @@ class BusinessRegistration(templates.Template):
         # 사업자 등록증 크기 설정
         size = (self.width, self.height)
 
-        # 배경 레이어 생성 (흰색 종이)
-        # bg_layer = layers.RectLayer(size, (255, 255, 255, 255))
-        bg_layer = self.paper.generate(size)
+        # 배경 레이어 생성 (paper texture)
+        bg_layer = layers.RectLayer(size, (255, 255, 255, 255))
+        # bg_layer = self.paper.generate(size)
         
         # 사업자 등록증 양식 이미지 생성
         template_layer = self.create_registration_template(size)
 
-        # Blend images - texture
-        # opacity = 0.9
-        # blended_img = multiply(template_layer.image, bg_layer.image, opacity)
-        # template_layer.image = blended_img
         # Blend images - 종이 질감 + 사업자등록증 배경
-        opacity = 0.3
-        blended_img = normal(template_layer.image, bg_layer.image, opacity)
-        template_layer.image = blended_img
+        # opacity = 0.7
+        # blended_img = normal(template_layer.image, bg_layer.image, opacity)
+        # template_layer.image = blended_img
 
         # Paper Effect 적용
         # self.paper_effect.apply([template_layer])
@@ -177,7 +313,6 @@ class BusinessRegistration(templates.Template):
                             self.fields[field]["font_size"], 
                             self.fields[field]["bold"])
                         text_layers.append(text_layer)
-                        # texts.append(item)
                         texts.append({"text": re.sub(r'\s{2,}', ' ', item), "position": position})
 
                         # combined_info에 값 추가
@@ -222,27 +357,38 @@ class BusinessRegistration(templates.Template):
                             self.fields[field]["bold"]
                         )
                         text_layers.append(text_layer)
-                        # texts.append(value)
                         texts.append({"text": re.sub(r'\s{2,}', ' ', value), "position": self.fields[field]["position"]})
 
                         # combined_info에 값 추가
                         combined_info[f"value_{field}"] = value
         
-        # 모든 레이어 결합
-        # document_group = layers.Group([*text_layers, template_layer, bg_layer])
-        document_group = layers.Group([*text_layers, template_layer])
-        layer = document_group.merge()
+        # 텍스트 레이어 결합 & 텍스트 효과 적용
+        text_group = layers.Group([*text_layers, bg_layer])
+        text_layer = text_group.merge()
+        self.ink_effect.apply([text_layer])
+        text_layer.image = self.make_white_transparent(text_layer)
+
+        # 배경 texture 적용
+        texture_layer = self.paper.generate(size)
+        if np.random.rand() < self.apply_texture:
+            opacity = 0.7
+            blended_img = multiply(template_layer.image, texture_layer.image, opacity)
+            template_layer.image = blended_img
+        # 배경 레이어 효과 적용
+        self.paper_effect.apply([template_layer])
         
-        # 효과 적용
-        # self.effect.apply([layer])
-        self.custom_effect.apply([layer])
-        # self.paper_effect.apply([layer])
+        
+        # 모든 레이어 결합
+        document_group = layers.Group([text_layer, template_layer])
+        layer = document_group.merge()
+        # post effect 효과 적용
         self.post_effect.apply([layer])
+        
         # 최종 이미지 출력
         image = layer.output(bbox=[0, 0, *size])
         
         # 레이블 생성 (모든 텍스트를 공백으로 연결)
-        # 텍스트의 순서를 left top -> right bottom 순으로 정렬        
+        # 텍스트의 순서를 left top -> right bottom 순으로 정렬
         new_ordered_texts = []
         sorted_texts = sorted(texts, key=lambda item: (item['position'][1], item['position'][0]))
         # 정렬된 결과 출력
@@ -268,6 +414,26 @@ class BusinessRegistration(templates.Template):
         }
         
         return data
+
+    def make_white_transparent(self, layer):
+        
+        img_bgra = cv2.cvtColor(layer.image, cv2.COLOR_BGRA2RGBA)
+
+        # Convert to grayscale if not already.
+        if len(layer.image.shape) > 2 and layer.image.shape[2] > 1:
+            img_alpha = cv2.cvtColor(layer.image.astype(np.single), cv2.COLOR_BGR2GRAY)
+        else:
+            img_alpha = layer.image
+        
+        # 이진화할 임계값 설정
+        threshold_value = 200
+
+        # 이진화 수행
+        _, img_binary = cv2.threshold(img_alpha, threshold_value, 255, cv2.THRESH_BINARY)
+
+        # Apply transparency mask based on grayscale.
+        img_bgra[:, :, 3] = ~(img_binary[:, :].astype(np.int64))
+        return img_bgra
     
     def create_registration_template(self, size):
         temlate_img_paths = utils.search_files(self.registration_template_path, exts=[".jpg", ".jpeg", ".png", ".bmp"])
@@ -367,7 +533,6 @@ class BusinessRegistration(templates.Template):
         os.makedirs(os.path.dirname(image_filepath), exist_ok=True)
         image = Image.fromarray(image[..., :3].astype(np.uint8))
         image.save(image_filepath, quality=quality)
-
         # save metadata (gt_json)
         # metadata_filename = "metadata.json"
         annotation_filename = f"{image_filename.split('.')[0]}.json"
@@ -380,8 +545,7 @@ class BusinessRegistration(templates.Template):
             values=[label, business_info, combined_info]
         )
         with open(annotation_filepath, "a") as annotation_file:
-            json.dump(annotation_data, annotation_file, ensure_ascii=False, indent=4)
-        
+            json.dump(annotation_data, annotation_file, ensure_ascii=False, indent=4)       
 
     
     def end_save(self, root):

@@ -31,39 +31,7 @@ class BusinessNormalRegistration(templates.Template):
         self.height = config.get("height", 2074)
         self.background = Background(config.get("background", {}))
         # self.document = Document(config.get("document", {}))
-        self.paper = Paper(config.get("document", {}).get("paper", {}))
-        self.effect = components.Iterator(
-            [
-                components.Switch(components.RGB()),
-                components.Switch(components.Shadow()),
-                components.Switch(components.Contrast()),
-                components.Switch(components.RGBShiftBrightness()),
-                components.Switch(components.MotionBlur()),
-                components.Switch(components.GaussianBlur()),
-            ],
-            **config.get("effect", {}),
-        )
-
-        self.custom_effect = components.Iterator(
-            [
-                components.Switch(components.LowInkRandomLines()),
-            ],
-            **config.get("custom_effect", {}),
-        )
-
-        self.paper_effect = components.Iterator(
-            [
-                components.Switch(components.BrightnessTexturize()),
-            ],
-            **config.get("paper_effect", {}),
-        )
-
-        self.post_effect = components.Iterator(
-            [
-                components.Switch(components.ReflectedLight()),
-            ],
-            **config.get("post_effect", {}),
-        )
+        self.paper = Paper(config.get("document", {}).get("paper", {}))        
 
         # 사업자 등록증 배경이미지
         self.registration_template_path = config.get("business_registration", {}).get("template_image", {}).get("paths", [])
