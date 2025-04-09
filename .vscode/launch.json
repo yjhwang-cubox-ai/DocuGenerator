@@ -5,13 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "genearator",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "processor.py",
-            "console": "integratedTerminal"
-        },
-        {
             "name": "business_registration",
             "type": "debugpy",
             "request": "launch",
@@ -19,7 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-o", "result",
-                "-c", "30",
+                "-c", "10000",
                 "-w", "8",
                 "-v", "examples/businessRegistration/business_registration_generator.py",
                 "BusinessRegistration",                
@@ -37,22 +30,6 @@
               "app.py" // 당신의 streamlit 파일 이름
             ],
             "console": "integratedTerminal",
-            "justMyCode": false
-        },
-        {
-            "name": "test",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "main.py",
-            "console": "integratedTerminal",
-            "args": [
-                "-o", "result",
-                "-c", "30",
-                "-w", "8",
-                "-v", "examples/business_registration/business_registration_generator.py",
-                "BusinessRegistration",                
-                "examples/business_registration/config.yaml"
-            ],
             "justMyCode": false
         },
     ]
