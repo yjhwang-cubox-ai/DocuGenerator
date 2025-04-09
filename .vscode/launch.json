@@ -14,9 +14,9 @@
                 "-o", "result",
                 "-c", "10000",
                 "-w", "8",
-                "-v", "examples/businessRegistration/business_registration_generator.py",
+                "-v", "examples/business_registration/business_registration_generator.py",
                 "BusinessRegistration",                
-                "examples/businessRegistration/config.yaml"
+                "examples/business_registration/config.yaml"
             ],
             "justMyCode": false
         },
@@ -24,10 +24,10 @@
             "name": "Streamlit Debug",
             "type": "debugpy",
             "request": "launch",
-            "program": "/data/anaconda3/envs/synthtiger/bin/streamlit", // Windows일 경우: "${workspaceFolder}/venv/Scripts/streamlit.exe"
+            "program": "/data/anaconda3/envs/synthtiger/bin/streamlit",
             "args": [
               "run",
-              "app.py" // 당신의 streamlit 파일 이름
+              "app.py"
             ],
             "console": "integratedTerminal",
             "justMyCode": false

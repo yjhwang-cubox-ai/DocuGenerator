@@ -6,8 +6,8 @@ MIT license
 
 import numpy as np
 
-from synthtiger import utils
-from synthtiger.components.color.color_map import ColorMap
+from synthdocs import utils
+from synthdocs.components.color.color_map import ColorMap
 
 
 class GrayMap(ColorMap):
