@@ -1,0 +1,15 @@
+numpy==1.24.3
+blend_modes
+opencv-python
+pillow
+arabic_reshaper
+regex
+python-bidi
+numba
+scikit-image
+scikit-learn
+imgaug
+pytweening
+requests
+PyYAML
+pandas

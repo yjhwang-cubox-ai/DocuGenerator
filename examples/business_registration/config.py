@@ -22,7 +22,7 @@ DEFAULT_BOLD_FONT_PATH = "fonts/gulim.ttc"
 
 # 데이터 경로 설정
 DEFAULT_BIZ_INFO_PATH = "resources/business_registration/biz_info.csv"
-DEFAULT_TAX_OFFICE_LIST_PATH = "dataset/tax_office_list.txt"
+DEFAULT_TAX_OFFICE_LIST_PATH = "resources/business_registration/tax_office_list.txt"
 DEFAULT_TEMPLATE_PATHS = []  # 사업자 등록증 배경 이미지 경로
 
 # 레이아웃: 사업자 등록증 필드 정의 (필드명, 좌표(x, y), 폰트 크기, 볼드 여부)
