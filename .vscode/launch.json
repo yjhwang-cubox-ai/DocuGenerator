@@ -38,6 +38,22 @@
             ],
             "console": "integratedTerminal",
             "justMyCode": false
-        }
+        },
+        {
+            "name": "test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "-o", "result",
+                "-c", "30",
+                "-w", "8",
+                "-v", "examples/business_registration/business_registration_generator.py",
+                "BusinessRegistration",                
+                "examples/business_registration/config.yaml"
+            ],
+            "justMyCode": false
+        },
     ]
 }
